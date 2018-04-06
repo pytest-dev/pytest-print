@@ -1,9 +1,11 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 from typing import Text
 
-from pkg_resources import DistributionNotFound, get_distribution
+from pkg_resources import DistributionNotFound
+from pkg_resources import get_distribution
 import pytest
 import six
 
@@ -20,22 +22,33 @@ __version__ = _version()
 
 
 # noinspection SpellCheckingInspection
-@pytest.yield_fixture
-def pytest_print(config):
+def pytest_addoption(parser):
+    group = parser.getgroup("general")
+    group.addoption('--print-relative-time',
+                    action='store_true',
+                    dest="pytest_print_relative_time",
+                    default=False,
+                    help="Time in milliseconds when the print was invoked,"
+                         " relative to the time the fixture was created.")
+
+
+# noinspection SpellCheckingInspection
+@pytest.fixture
+def printer(request):
     """pytest plugin to print test progress steps in verbose mode"""
 
     # noinspection PyUnusedLocal
     def no_op(*args):
         pass
 
-    if config.getoption('verbose') <= 0:
+    if request.config.getoption('verbose') <= 0:
         return no_op
 
-    terminal_reporter = config.pluginmanager.getplugin('terminalreporter')
+    terminal_reporter = request.config.pluginmanager.getplugin('terminalreporter')
     if terminal_reporter is None:
         return no_op
 
-    print_relative_time = config.getoption('pytest_print_relative_time')
+    print_relative_time = request.config.getoption('pytest_print_relative_time')
 
     first_call = [True]
     start_datetime = datetime.now()
@@ -56,11 +69,4 @@ def pytest_print(config):
         terminal_reporter.write(msg)
         terminal_reporter.write('\n')
 
-    yield _print
-
-
-def pytest_addoption(parser):
-    group = parser.getgroup("general")
-    group.addoption('--print-relative-time', action='store_true', dest="pytest_print_relative_time", default=False,
-                    help="Time in milliseconds when the print was invoked,"
-                         " relative to the time the fixture was created.")
+    return _print

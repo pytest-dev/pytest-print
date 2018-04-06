@@ -4,7 +4,7 @@ pytest-print
 Allows to print extra content onto the PyTest reporting. This can be used for example to report sub-steps for long
 running tests, or to print debug information in your tests when you cannot debug the code.
 
-|pypi| |support| |licence| 
+|pypi| |support| |licence|
 
 |readthedocs| |travis| |appveyor| |coverage|
 
@@ -66,14 +66,19 @@ background.
        start_server(tmpdir)
 
        pytest_print("do the parallel request test")
-       test_parallel_requests()
+       parallel_requests()
 
 .. code-block:: sh
 
     $ py.test --vv
-    ============================= test session starts =========================
+    ============================= test session starts ==============================
     platform linux -- Python 3.6.4, pytest-3.5.0, py-1.5.3, pluggy-0.6.0
-    rootdir: ~/git/pytest-print, inifile:
-    plugins: print-0.1.0
-    collecting 1 item
+    collecting ... collected 1 item
 
+    test_printer_progress.py::test_server_parallel_requests
+        create virtual environment
+        start server from virtual env
+        do the parallel request test
+    PASSED                                                                   [100%]
+
+    =========================== 1 passed in 0.02 seconds ===========================

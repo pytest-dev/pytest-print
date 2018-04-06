@@ -2,7 +2,7 @@
 """Handle the package management of the module"""
 from __future__ import absolute_import
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name='pytest-print',
@@ -27,10 +27,10 @@ setup(
         'Topic :: Utilities',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.6'
+        'Programming Language :: Python :: 3.6',
+        "Framework :: Pytest"
     ],
-
-    py_modules=['pytest_print'],
+    packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=False,
 
@@ -46,7 +46,7 @@ setup(
             'typing >= 3.6.2, <4'
         ],
         'testing': ['pytest >= 3.5.0, < 4',
-                    'pytest-cov >= 2.5.1, < 3'],
+                    'coverage >= 4.5.1'],
         'lint': ['flake8 == 3.4.1',
                  'flake8-bugbear == 17.4.0',
                  'pre-commit == 1.8.2'],
