@@ -2,13 +2,16 @@
 """Handle the package management of the module"""
 from __future__ import absolute_import
 
-from setuptools import find_packages, setup
+from setuptools import find_packages
+from setuptools import setup
 
 setup(
     name='pytest-print',
     use_scm_version=True,
+
     description='pytest plugin that provides a fixture to print onto the PyTest reporting',
     long_description=open("README.rst").read(),
+    long_description_content_type='text/x-rst',
     author='Bernat Gabor',
     author_email='gaborjbernat@gmail.com',
     url='https://github.com/gaborbernat/pytest-print',
@@ -30,6 +33,13 @@ setup(
         'Programming Language :: Python :: 3.6',
         "Framework :: Pytest"
     ],
+    keywords='pytest print debug',
+    project_urls={
+        'Documentation': 'http://pytest-print.readthedocs.io/en/latest/',
+        'Source': 'https://github.com/gaborbernat/pytest-print',
+        'Tracker': 'https://github.com/gaborbernat/pytest-print/issues',
+    },
+
     packages=find_packages('src'),
     package_dir={'': 'src'},
     include_package_data=False,
@@ -43,15 +53,13 @@ setup(
                       'six >= 1.11.0, <2'],
     extras_require={
         ':python_version < "3.5"': [
-            'typing >= 3.6.2, <4'
+            'typing >= 3.6.4, <4'
         ],
         'testing': ['pytest >= 3.5.0, < 4',
                     'coverage >= 4.5.1'],
         'lint': ['flake8 == 3.4.1',
                  'flake8-bugbear == 17.4.0',
                  'pre-commit == 1.8.2'],
-        'doc': ['Sphinx >= 1.7.0, < 2',
-                'sphinx_py3doc_enhanced_theme >= 2.4.0, < 3',
-                'sphinx-autodoc-types >= 2.1.2']
+        'docs': ['Sphinx >= 1.7.0, < 2']
     }
 )

@@ -1,0 +1,3 @@
+setuptools >= 31.1.0
+wheel >= 0.30.0
+setuptools_scm >= 1.15.6, <2

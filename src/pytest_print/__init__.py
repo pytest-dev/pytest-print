@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from datetime import datetime
 from typing import Text
 
-from pkg_resources import DistributionNotFound
-from pkg_resources import get_distribution
 import pytest
 import six
+from pkg_resources import DistributionNotFound
+from pkg_resources import get_distribution
 
 
 def _version():  # type: () -> Text
@@ -39,14 +40,14 @@ def printer(request):
 
     # noinspection PyUnusedLocal
     def no_op(*args):
-        pass
+        """do nothing"""
 
     if request.config.getoption('verbose') <= 0:
         return no_op
 
     terminal_reporter = request.config.pluginmanager.getplugin('terminalreporter')
     if terminal_reporter is None:
-        return no_op
+        return no_op  # pragma: no cover
 
     print_relative_time = request.config.getoption('pytest_print_relative_time')
 
@@ -63,7 +64,7 @@ def printer(request):
 
         if print_relative_time:
             delta = datetime.now() - start_datetime
-            terminal_reporter.write(delta)
+            terminal_reporter.write(delta.total_seconds())
             terminal_reporter.write('\t')
 
         terminal_reporter.write(msg)
