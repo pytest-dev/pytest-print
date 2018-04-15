@@ -13,14 +13,16 @@ def test_version():
 @pytest.fixture(name='progress_report_example')
 def progress_report_example_fixture(testdir):
     testdir.makepyfile("""
+from time import sleep
+
 def create_virtual_environment(tmpdir):
-    pass
+    sleep(0.001)
 
 def start_server(tmpdir):
-    pass
+    sleep(0.001)
 
 def parallel_requests():
-    pass
+    sleep(0.001)
 
 def test_server_parallel_requests(printer, tmpdir):
        printer("create virtual environment")

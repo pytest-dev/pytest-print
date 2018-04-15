@@ -49,8 +49,8 @@ setup(
     platforms='any',
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
 
-    install_requires=['pytest >= 3.0, <4',
-                      'six >= 1.11.0, <2'],
+    install_requires=['pytest >= 3.0.0, <4',
+                      'six >= 1.10.0, <2'],
     extras_require={
         ':python_version < "3.5"': [
             'typing >= 3.6.4, <4'
@@ -60,6 +60,6 @@ setup(
         'lint': ['flake8 == 3.4.1',
                  'flake8-bugbear == 17.4.0',
                  'pre-commit == 1.8.2'],
-        'docs': ['Sphinx >= 1.7.0, < 2']
+        'docs': ['Sphinx >= 1.7.2, < 2']
     }
 )
