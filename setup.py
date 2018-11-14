@@ -49,7 +49,7 @@ setup(
     platforms='any',
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
 
-    install_requires=['pytest >= 3.0.0, <4',
+    install_requires=['pytest >= 4.0.0, <5',
                       'six >= 1.10.0, <2'],
     extras_require={
         ':python_version < "3.5"': [
