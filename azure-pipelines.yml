@@ -129,9 +129,18 @@ jobs:
       - task: UsePythonVersion@0
         displayName: setup python3.7
         inputs: {versionSpec: '3.7'}
-      - task: PyPIPublisher@0
-        displayName: Package and publish to PyPI
+      - script: 'python -m pip -U pip twine'
+        displayName: upgrade pip
+      - script: 'pip wheel -w $(Build.ArtifactStagingDirectory)/build --no-deps .'
+        displayName: build wheel
+      - task: PublishBuildArtifacts@1
+        displayName: wheel to Azure Artifact
         inputs:
-          pypiConnection: pypi-conn
-          packageDirectory: $(System.DefaultWorkingDirectory)
-          alsoPublishWheel: true
+          pathtoPublish: "$(Build.ArtifactStagingDirectory)/build"
+          ArtifactName: wheel
+      - task: TwineAuthenticate@0
+        inputs:
+          artifactFeeds: ''
+          externalFeeds: pypi-conn
+      - script: 'twine upload -r pypi --verbose --config-file $(PYPIRC_PATH) $(Build.ArtifactStagingDirectory)/build/*.whl'
+        displayName: perform publish
