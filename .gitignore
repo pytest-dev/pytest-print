@@ -8,3 +8,4 @@ __pycache__
 **.pyc
 build
 dist
+src/pytest_print/version.py

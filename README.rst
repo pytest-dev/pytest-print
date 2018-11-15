@@ -4,37 +4,24 @@ pytest-print
 Allows to print extra content onto the PyTest reporting. This can be used for example to report sub-steps for long
 running tests, or to print debug information in your tests when you cannot debug the code.
 
-|pypi| |support| |licence|
-
-|readthedocs| |travis| |appveyor| |coverage|
-
-.. |pypi| image:: https://img.shields.io/pypi/v/pytest-print.svg?style=flat-square
-    :target: https://pypi.org/project/pytest-print/
-    :alt: pypi version
-
-.. |support| image:: https://img.shields.io/pypi/pyversions/pytest-print.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/pytest-print/
-    :alt: supported Python version
-
-.. |travis| image:: https://img.shields.io/travis/gaborbernat/pytest-print/master.svg?style=flat-square&label=Travis%20Build
-    :target: https://travis-ci.org/gaborbernat/pytest-print
-    :alt: travis build status
-
-.. |appveyor| image:: https://img.shields.io/appveyor/ci/gaborbernat/pytest-print/master.svg?style=flat-square&logo=appveyor
-    :target: https://ci.appveyor.com/project/gaborbernat/pytest-print
-    :alt: appveyor build status
-
-.. |coverage| image:: https://codecov.io/github/gaborbernat/pytest-print/coverage.svg?branch=master
-    :target: https://codecov.io/github/gaborbernat/pytest-print?branch=master
-    :alt: Code coverage
-
-.. |licence| image:: https://img.shields.io/pypi/l/pytest-print.svg?style=flat-square
-    :target: https://pypi.python.org/pypi/pytest-print/
-    :alt: licence
-
-.. |readthedocs| image:: https://img.shields.io/readthedocs/pytest-print/latest.svg?style=flat-square&label=Read%20the%20Docs
-   :alt: Read the documentation at https://pytest-print.readthedocs.io/en/latest/
-   :target: https://pytest-print.readthedocs.io/en/latest/
+.. image:: https://badge.fury.io/py/pytest_print.svg
+  :target: https://badge.fury.io/py/pytest_print
+  :alt: Latest version on PyPI
+.. image:: https://img.shields.io/pypi/pyversions/pytest_print.svg
+  :target: https://pypi.org/project/pytest_print/
+  :alt: Supported Python versions
+.. image:: https://dev.azure.com/pytestdev/pytest_print/_apis/build/status/pytest_print%20ci?branchName=master
+  :target: https://dev.azure.com/pytestdev/pytest_print/_build/latest?definitionId=9&branchName=master
+  :alt: Azure Pipelines build status
+.. image:: https://api.codeclimate.com/v1/badges/425c19ab2169a35e1c16/test_coverage
+   :target: https://codeclimate.com/github/pytest_print-dev/pytest_print/code?sort=test_coverage
+   :alt: Test Coverage
+.. image:: https://readthedocs.org/projects/pytest_print/badge/?version=latest&style=flat-square
+  :target: https://pytest_print.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation status
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+  :target: https://github.com/ambv/black
+  :alt: Code style: black
 
 
 install
@@ -58,14 +45,14 @@ background.
 
 .. code-block:: python
 
-   def test_server_parallel_requests(pytest_print, tmpdir):
-       pytest_print("create virtual environment into {}".format(tmpdir))
+   def test_server_parallel_requests(printer, tmpdir):
+       printer("create virtual environment into {}".format(tmpdir))
        create_virtual_environment(tmpdir)
 
-       pytest_print("start server from virtual env")
+       printer("start server from virtual env")
        start_server(tmpdir)
 
-       pytest_print("do the parallel request test")
+       printer("do the parallel request test")
        parallel_requests()
 
 .. code-block:: sh
