@@ -49,13 +49,13 @@ setup(
     platforms='any',
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
 
-    install_requires=['pytest >= 4.0.0, <5',
+    install_requires=['pytest >= 3.0.0, <5',
                       'six >= 1.10.0, <2'],
     extras_require={
         ':python_version < "3.5"': [
             'typing >= 3.6.4, <4'
         ],
-        'testing': ['pytest >= 3.5.0, < 4',
+        'testing': ['pytest >= 3.5.0, < 5',
                     'coverage >= 4.5.1'],
         'lint': ['flake8 == 3.4.1',
                  'flake8-bugbear == 17.4.0',
