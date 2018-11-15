@@ -13,9 +13,6 @@ running tests, or to print debug information in your tests when you cannot debug
 .. image:: https://dev.azure.com/pytestdev/pytest_print/_apis/build/status/pytest_print%20ci?branchName=master
   :target: https://dev.azure.com/pytestdev/pytest_print/_build/latest?definitionId=9&branchName=master
   :alt: Azure Pipelines build status
-.. image:: https://api.codeclimate.com/v1/badges/425c19ab2169a35e1c16/test_coverage
-   :target: https://codeclimate.com/github/pytest_print-dev/pytest_print/code?sort=test_coverage
-   :alt: Test Coverage
 .. image:: https://readthedocs.org/projects/pytest_print/badge/?version=latest&style=flat-square
   :target: https://pytest_print.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation status
