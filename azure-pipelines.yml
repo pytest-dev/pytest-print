@@ -129,9 +129,9 @@ jobs:
       - task: UsePythonVersion@0
         displayName: setup python3.7
         inputs: {versionSpec: '3.7'}
-      - script: 'python -m pip -U pip twine'
+      - script: 'python -m pip install -U pip twine'
         displayName: upgrade pip
-      - script: 'pip wheel -w $(Build.ArtifactStagingDirectory)/build --no-deps .'
+      - script: 'python -m pip wheel -w $(Build.ArtifactStagingDirectory)/build --no-deps .'
         displayName: build wheel
       - task: PublishBuildArtifacts@1
         displayName: wheel to Azure Artifact
@@ -142,5 +142,5 @@ jobs:
         inputs:
           artifactFeeds: ''
           externalFeeds: pypi-conn
-      - script: 'twine upload -r pypi --verbose --config-file $(PYPIRC_PATH) $(Build.ArtifactStagingDirectory)/build/*.whl'
+      - script: 'python -m twine upload -r pypi --verbose --config-file $(PYPIRC_PATH) $(Build.ArtifactStagingDirectory)/build/*.whl'
         displayName: perform publish

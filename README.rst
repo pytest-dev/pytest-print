@@ -10,8 +10,8 @@ running tests, or to print debug information in your tests when you cannot debug
 .. image:: https://img.shields.io/pypi/pyversions/pytest_print.svg
   :target: https://pypi.org/project/pytest_print/
   :alt: Supported Python versions
-.. image:: https://dev.azure.com/pytestdev/pytest_print/_apis/build/status/pytest_print%20ci?branchName=master
-  :target: https://dev.azure.com/pytestdev/pytest_print/_build/latest?definitionId=9&branchName=master
+.. image:: https://dev.azure.com/pytestdev/pytest_print/_apis/build/status/pytest-dev.pytest-print
+  :target: https://dev.azure.com/pytestdev/pytest_print/_build/latest?definitionId=1
   :alt: Azure Pipelines build status
 .. image:: https://readthedocs.org/projects/pytest_print/badge/?version=latest&style=flat-square
   :target: https://pytest_print.readthedocs.io/en/latest/?badge=latest
