@@ -142,5 +142,5 @@ jobs:
         inputs:
           artifactFeeds: ''
           externalFeeds: pypi-conn
-      - script: 'python -m twine upload -r pypi --verbose --config-file $(PYPIRC_PATH) $(Build.ArtifactStagingDirectory)/build/*.whl'
+      - script: 'python -m twine upload -r pypi --verbose --config-file $PYPIRC_PATH $(Build.ArtifactStagingDirectory)/build/*.whl'
         displayName: perform publish
