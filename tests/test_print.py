@@ -72,3 +72,9 @@ def test_progress_v_relative(progress_report_example):
         "start server from virtual env",
         "do the parallel request test",
     ]
+
+
+def test_progress_no_v_but_with_print_request(progress_report_example):
+    result = progress_report_example.runpytest("--print")
+    result.assert_outcomes(passed=1)
+    assert "	start server from virtual env" in result.outlines
