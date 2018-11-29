@@ -17,6 +17,13 @@ def pytest_addoption(parser):
         default=False,
         help="Time in milliseconds when the print was invoked, relative to the time the fixture was created.",
     )
+    group.addoption(
+        "--print",
+        action="store_true",
+        dest="pytest_print_on",
+        default=False,
+        help="By default the plugins if verbosity is greater than zero (-v flag), this forces on",
+    )
 
 
 # noinspection SpellCheckingInspection
@@ -28,7 +35,7 @@ def printer(request):
     def no_op(*args):
         """do nothing"""
 
-    if request.config.getoption("verbose") <= 0:
+    if not request.config.getoption("pytest_print_on") and request.config.getoption("verbose") <= 0:
         return no_op
 
     terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")

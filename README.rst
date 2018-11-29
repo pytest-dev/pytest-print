@@ -30,6 +30,12 @@ install
 
 The plugin provides ability to print information during the tests runs.
 
+flags
+=====
+* ``--print`` by default the module activates print when pytest verbosity is greater than zero, this allows to bypass
+  this and force print irrespective of the verbosity
+* ``--print-relative-time`` will print the relative time since the start of the test (display how long it takes to reach
+  prints)
 
 use cases
 =========
