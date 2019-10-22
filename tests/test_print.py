@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import os
+
 import pytest
+
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def test_version():
@@ -12,30 +16,7 @@ def test_version():
 
 @pytest.fixture(name="progress_report_example")
 def progress_report_example_fixture(testdir):
-    testdir.makepyfile(
-        """
-from time import sleep
-
-def create_virtual_environment(tmpdir):
-    sleep(0.001)
-
-def start_server(tmpdir):
-    sleep(0.001)
-
-def parallel_requests():
-    sleep(0.001)
-
-def test_server_parallel_requests(printer, tmpdir):
-       printer("create virtual environment")
-       create_virtual_environment(tmpdir)
-
-       printer("start server from virtual env")
-       start_server(tmpdir)
-
-       printer("do the parallel request test")
-       parallel_requests()
-"""
-    )
+    os.link(os.path.join(HERE, "example.py"), str(testdir.tmpdir / "test_example.py"))
     yield testdir
 
 
@@ -60,10 +41,11 @@ def test_progress_v_no_relative(progress_report_example):
 
 
 def test_progress_v_relative(progress_report_example):
-    result_verbose_relative = progress_report_example.runpytest("-v", "--print-relative-time")
+    result_verbose_relative = progress_report_example.runpytest("--print", "-v", "--print-relative-time")
     result_verbose_relative.assert_outcomes(passed=1)
 
-    from_index = result_verbose_relative.outlines.index("test_progress_v_relative.py::test_server_parallel_requests ")
+    marker = "test_example.py::test_server_parallel_requests "
+    from_index = result_verbose_relative.outlines.index(marker)
     output = (i.split("\t") for i in result_verbose_relative.outlines[from_index + 1 : from_index + 4])
     out = sorted([(float(relative), msg) for _, relative, msg in output])
 
