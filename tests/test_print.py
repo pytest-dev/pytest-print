@@ -27,11 +27,11 @@ def test_progress_no_v(progress_report_example):
 
 
 def test_progress_v_no_relative(progress_report_example):
-    result_verbose = progress_report_example.runpytest("-v")
+    result_verbose = progress_report_example.runpytest("-v", "--print")
     result_verbose.assert_outcomes(passed=1)
 
     report_lines = [
-        "test_progress_v_no_relative.py::test_server_parallel_requests ",
+        "test_example.py::test_server_parallel_requests ",
         "\tcreate virtual environment",
         "\tstart server from virtual env",
         "\tdo the parallel request test",
@@ -42,9 +42,11 @@ def test_progress_v_no_relative(progress_report_example):
 
 def test_progress_v_relative(progress_report_example):
     result_verbose_relative = progress_report_example.runpytest("--print", "-v", "--print-relative-time")
+    out = "\n".join(result_verbose_relative.outlines)
     result_verbose_relative.assert_outcomes(passed=1)
 
     marker = "test_example.py::test_server_parallel_requests "
+    assert marker in result_verbose_relative.outlines, out
     from_index = result_verbose_relative.outlines.index(marker)
     output = (i.split("\t") for i in result_verbose_relative.outlines[from_index + 1 : from_index + 4])
     out = sorted([(float(relative), msg) for _, relative, msg in output])
@@ -53,7 +55,7 @@ def test_progress_v_relative(progress_report_example):
         "create virtual environment",
         "start server from virtual env",
         "do the parallel request test",
-    ]
+    ], out
 
 
 def test_progress_no_v_but_with_print_request(progress_report_example):
