@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 from datetime import datetime
 
@@ -28,43 +27,55 @@ def pytest_addoption(parser):
 
 
 # noinspection SpellCheckingInspection
-@pytest.fixture
+@pytest.fixture(name="printer", scope="function")
 def printer(request):
     """pytest plugin to print test progress steps in verbose mode"""
+    return _provide_printer(request)
 
-    # noinspection PyUnusedLocal
-    def no_op(*args):
-        """do nothing"""
 
-    if not request.config.getoption("pytest_print_on") and request.config.getoption("verbose") <= 0:
-        return no_op
+@pytest.fixture(scope="session", name="printer_session")
+def printer_session(request):
+    return _provide_printer(request)
 
-    terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
-    if terminal_reporter is None:
-        return no_op  # pragma: no cover
 
-    print_relative_time = request.config.getoption("pytest_print_relative_time")
+class State(object):
+    def __init__(self, print_relative_time):
+        self.first_call = True
+        self.start_datetime = datetime.now() if print_relative_time else None
+        self.print_relative_time = print_relative_time
 
-    first_call = [True]
-    start_datetime = datetime.now()
+    @property
+    def elapsed(self):
+        if self.start_datetime is None:
+            return None
+        return (datetime.now() - self.start_datetime).total_seconds()
 
-    def _print(msg):
+    __slots__ = ("first_call", "start_datetime", "print_relative_time")
 
-        if first_call[0]:  # in case of the first call we don't have a new empty line, print it
-            terminal_reporter.write("\n")
-            first_call[0] = False
 
-        terminal_reporter.write("\t")
+def _provide_printer(request):
+    if request.config.getoption("pytest_print_on") and request.config.getoption("verbose") > 0:
+        terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
+        if terminal_reporter is not None:
+            state = State(request.config.getoption("pytest_print_relative_time"))
 
-        if print_relative_time:
-            delta = datetime.now() - start_datetime
-            terminal_reporter.write(delta.total_seconds())
-            terminal_reporter.write("\t")
+            def _print(msg):
+                if state.first_call:  # in case of the first call we don't have a new empty line, print it
+                    state.first_call = False
+                    terminal_reporter.write("\n")
 
-        terminal_reporter.write(msg)
-        terminal_reporter.write("\n")
+                terminal_reporter.write("\t")
 
-    return _print
+                if state.print_relative_time:
+                    terminal_reporter.write(str(state.elapsed))
+                    terminal_reporter.write("\t")
+
+                terminal_reporter.write(msg)
+                terminal_reporter.write("\n")
+
+            return _print
+
+    return lambda *args: None
 
 
 __all__ = ("__version__",)
