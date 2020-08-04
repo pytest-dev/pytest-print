@@ -4,23 +4,6 @@ pytest-print
 Allows to print extra content onto the PyTest reporting. This can be used for example to report sub-steps for long
 running tests, or to print debug information in your tests when you cannot debug the code.
 
-.. image:: https://badge.fury.io/py/pytest_print.svg
-  :target: https://badge.fury.io/py/pytest_print
-  :alt: Latest version on PyPI
-.. image:: https://img.shields.io/pypi/pyversions/pytest_print.svg
-  :target: https://pypi.org/project/pytest_print/
-  :alt: Supported Python versions
-.. image:: https://dev.azure.com/pytestdev/pytest_print/_apis/build/status/pytest-dev.pytest-print
-  :target: https://dev.azure.com/pytestdev/pytest_print/_build/latest?definitionId=1
-  :alt: Azure Pipelines build status
-.. image:: https://readthedocs.org/projects/pytest_print/badge/?version=latest&style=flat-square
-  :target: https://pytest_print.readthedocs.io/en/latest/?badge=latest
-  :alt: Documentation status
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-  :target: https://github.com/ambv/black
-  :alt: Code style: black
-
-
 install
 =======
 
