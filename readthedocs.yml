@@ -1,10 +1,10 @@
 formats:
-    - none
+  - none
 
 build:
-      image: latest
+  image: latest
 python:
-    version: 3.7
-    pip_install: true
-    extra_requirements:
-        - doc
+  version: 3.8
+  pip_install: true
+  extra_requirements:
+    - doc

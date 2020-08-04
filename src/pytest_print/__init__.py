@@ -43,7 +43,7 @@ def create_printer(request):
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
         if terminal_reporter is not None:
             state = State(request.config.getoption("pytest_print_relative_time"), terminal_reporter)
-            return state.print
+            return state.printer
 
     return no_op
 
@@ -65,7 +65,7 @@ class State(object):
             return None
         return (datetime.now() - self._start).total_seconds()
 
-    def print(self, msg):
+    def printer(self, msg):
         msg = "\t{}{}".format("{}\t".format(self.elapsed) if self._print_relative else "", msg)
         self._reporter.write_line(msg)
 

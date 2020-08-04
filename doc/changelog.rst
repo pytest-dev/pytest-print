@@ -1,6 +1,10 @@
 changelog
 =========
 
+v0.2.0
+------
+* support for use at session level fixtures
+
 v0.1.2
 ------
 * add ``--print`` flag to force on state even when verbosity is zero
