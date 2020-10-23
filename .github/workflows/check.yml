@@ -80,11 +80,10 @@ jobs:
           - Windows
         tox_env:
           - dev
-          - docs
           - pkg_desc
         exclude:
           - { os: Windows, tox_env: pkg_desc }
-          - { os: Windows, tox_env: docs }
+
     steps:
       - uses: actions/checkout@v2
       - name: setup python
