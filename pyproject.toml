@@ -1,13 +1,13 @@
 [build-system]
-requires = [
-    "setuptools >= 44",
-    "wheel >= 0.30",
-    "setuptools_scm[toml]>=3.4",
-]
+requires = ["setuptools >= 44", "wheel >= 0.30", "setuptools_scm[toml]>=3.4"]
 build-backend = 'setuptools.build_meta'
 
 [tool.black]
 line-length = 120
+
+[tool.isort]
+profile = "black"
+known_first_party = ["pytest_print"]
 
 [tool.setuptools_scm]
 write_to = "src/pytest_print/version.py"
