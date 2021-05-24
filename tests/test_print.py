@@ -58,7 +58,7 @@ def test_progress_v_relative(progress_report_example):
     marker = "test_example.py::test_global_peace "
     assert marker in result_verbose_relative.outlines, out
     output = (i.split("\t") for i in result_verbose_relative.outlines if i.startswith("\t"))
-    out = sorted([(float(relative), msg) for _, relative, msg in output])
+    out = sorted((float(relative), msg) for _, relative, msg in output)
 
     assert [msg for _, msg in out] == [
         "attempt global peace",
