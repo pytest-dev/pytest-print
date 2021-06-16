@@ -2,9 +2,19 @@
 
 ## [Unreleased](https://github.com/pytest-dev/pytest-print/tree/HEAD)
 
-[Full Changelog](https://github.com/pytest-dev/pytest-print/compare/0.2.0...HEAD)
+## [0.3.0](https://github.com/pytest-dev/pytest-print/tree/0.3.0) (2021-06-16)
 
-**Closed issues:**
+[Full Changelog](https://github.com/pytest-dev/pytest-print/compare/0.2.1...0.3.0)
+
+**Merged pull requests:**
+
+- Drop Python 2 support [\#6](https://github.com/pytest-dev/pytest-print/issues/7)
+
+## [0.2.1](https://github.com/pytest-dev/pytest-print/tree/0.2.1) (2020-10-23)
+
+[Full Changelog](https://github.com/pytest-dev/pytest-print/compare/0.2.0...0.2.1)
+
+**Implemented enhancements:**
 
 - add session level support [\#6](https://github.com/pytest-dev/pytest-print/issues/6)
 
