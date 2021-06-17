@@ -13,7 +13,6 @@ known_first_party = ["pytest_print"]
 write_to = "src/pytest_print/version.py"
 write_to_template = """
 \"\"\" Version information \"\"\"
-from __future__ import unicode_literals
 
 __version__ = "{version}"
 """

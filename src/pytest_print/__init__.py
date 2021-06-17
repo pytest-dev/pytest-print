@@ -1,14 +1,15 @@
-from __future__ import absolute_import, unicode_literals
-
 from datetime import datetime
+from typing import Callable, Optional
 
 import pytest
+from _pytest.config.argparsing import Parser
+from _pytest.fixtures import SubRequest
+from _pytest.terminal import TerminalReporter
 
 from .version import __version__
 
 
-# noinspection SpellCheckingInspection
-def pytest_addoption(parser):
+def pytest_addoption(parser: Parser) -> None:
     group = parser.getgroup("general")
     group.addoption(
         "--print-relative-time",
@@ -26,53 +27,50 @@ def pytest_addoption(parser):
     )
 
 
-# noinspection SpellCheckingInspection
-@pytest.fixture(name="printer", scope="function")
-def printer(request):
+@pytest.fixture(name="printer")
+def printer(request: SubRequest) -> Callable[[str], None]:
     """pytest plugin to print test progress steps in verbose mode"""
     return create_printer(request)
 
 
 @pytest.fixture(scope="session", name="printer_session")
-def printer_session(request):
+def printer_session(request: SubRequest) -> Callable[[str], None]:
     return create_printer(request)
 
 
-def create_printer(request):
+def create_printer(request: SubRequest) -> Callable[[str], None]:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
-        if terminal_reporter is not None:
+        if terminal_reporter is not None:  # pragma: no branch
             state = State(request.config.getoption("pytest_print_relative_time"), terminal_reporter)
             return state.printer
 
     return no_op
 
 
-# noinspection PyUnusedLocal
-def no_op(msg):
+def no_op(msg: str) -> None:  # noqa: U100
     """Do nothing"""
 
 
-class State(object):
-    def __init__(self, print_relative, reporter):
+class State:
+    def __init__(self, print_relative: bool, reporter: TerminalReporter) -> None:
         self._reporter = reporter
         self._start = datetime.now() if print_relative else None
         self._print_relative = print_relative
 
     @property
-    def elapsed(self):
+    def elapsed(self) -> Optional[float]:
         if self._start is None:
-            return None
+            return None  # pragma: no cover
         return (datetime.now() - self._start).total_seconds()
 
-    def printer(self, msg):
-        msg = "\t{}{}".format("{}\t".format(self.elapsed) if self._print_relative else "", msg)
+    def printer(self, msg: str) -> None:
+        msg = "\t{}{}".format(f"{self.elapsed}\t" if self._print_relative else "", msg)
         self._reporter.write_line(msg)
-
-    def __repr__(self):
-        return "{}(print_relative={}, reporter={!r})".format(type(self).__name__, self._print_relative, self._reporter)
 
     __slots__ = ("_start", "_print_relative", "_reporter")
 
 
-__all__ = ("__version__",)
+__all__ = [
+    "__version__",
+]
