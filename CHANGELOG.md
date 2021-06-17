@@ -1,20 +1,24 @@
 # Changelog
 
-## [Unreleased](https://github.com/pytest-dev/pytest-print/tree/HEAD)
-
 ## [0.3.0](https://github.com/pytest-dev/pytest-print/tree/0.3.0) (2021-06-17)
 
 [Full Changelog](https://github.com/pytest-dev/pytest-print/compare/0.2.1...0.3.0)
 
 **Merged pull requests:**
 
-- Drop Python 2 support [\#6](https://github.com/pytest-dev/pytest-print/issues/7)
+- Drop python 2 support [\#17](https://github.com/pytest-dev/pytest-print/pull/17) ([gaborbernat](https://github.com/gaborbernat))
+- \[pre-commit.ci\] pre-commit autoupdate [\#14](https://github.com/pytest-dev/pytest-print/pull/14) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#13](https://github.com/pytest-dev/pytest-print/pull/13) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#12](https://github.com/pytest-dev/pytest-print/pull/12) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#11](https://github.com/pytest-dev/pytest-print/pull/11) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#10](https://github.com/pytest-dev/pytest-print/pull/10) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
+- \[pre-commit.ci\] pre-commit autoupdate [\#9](https://github.com/pytest-dev/pytest-print/pull/9) ([pre-commit-ci[bot]](https://github.com/apps/pre-commit-ci))
 
 ## [0.2.1](https://github.com/pytest-dev/pytest-print/tree/0.2.1) (2020-10-23)
 
 [Full Changelog](https://github.com/pytest-dev/pytest-print/compare/0.2.0...0.2.1)
 
-**Implemented enhancements:**
+**Closed issues:**
 
 - add session level support [\#6](https://github.com/pytest-dev/pytest-print/issues/6)
 
