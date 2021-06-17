@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import patch
+from shutil import copy2
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
@@ -17,10 +17,8 @@ def test_version() -> None:
 @pytest.fixture()
 def example(testdir: Testdir) -> Testdir:
     dest = Path(str(testdir.tmpdir / "test_example.py"))
-    try:
-        dest.symlink_to(_EXAMPLE)
-    except OSError:  # pragma: no cover
-        raise RuntimeError("requires symlink to test")  # pragma: no cover
+    # dest.symlink_to(_EXAMPLE)  # for local debugging use this
+    copy2(str(_EXAMPLE), str(dest))
     return testdir
 
 
@@ -65,15 +63,20 @@ def test_progress_v_relative(example: Testdir) -> None:
 
     assert "example.py::test_server_parallel_requests " in out, out
     output = (i.split("\t") for i in result_verbose_relative.outlines if i.startswith("\t"))
-    res = sorted((float(relative), msg) for _, relative, msg in output)
+    found = [(float(relative), msg) for _, relative, msg in output]
 
-    assert [msg for _, msg in res] == [
-        "attempt global peace",
+    test = [m for _, m in sorted(i for i in found if "peace" not in i[1])]
+    assert test == [
         "create virtual environment",
         "start server from virtual env",
         "do the parallel request test",
+    ], test
+
+    session = [m for _, m in sorted(i for i in found if "peace" in i[1])]
+    assert session == [
+        "attempt global peace",
         "teardown global peace",
-    ], res
+    ], session
 
 
 def test_progress_no_v_but_with_print_request(example: Testdir) -> None:

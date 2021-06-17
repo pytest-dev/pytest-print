@@ -2,6 +2,7 @@ Runtime
 Testdir
 addoption
 argparsing
+copy2
 dest
 getgroup
 getoption

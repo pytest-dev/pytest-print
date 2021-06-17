@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/pytest-dev/pytest-print/tree/HEAD)
 
-## [0.3.0](https://github.com/pytest-dev/pytest-print/tree/0.3.0) (2021-06-16)
+## [0.3.0](https://github.com/pytest-dev/pytest-print/tree/0.3.0) (2021-06-17)
 
 [Full Changelog](https://github.com/pytest-dev/pytest-print/compare/0.2.1...0.3.0)
 
