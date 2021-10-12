@@ -33,7 +33,7 @@ repos:
     hooks:
       - id: rst-backticks
   - repo: https://github.com/asottile/setup-cfg-fmt
-    rev: v1.17.0
+    rev: v1.18.0
     hooks:
       - id: setup-cfg-fmt
         args: [--min-py3-version, "3.6", "--max-py-version", "3.10"]
@@ -43,13 +43,13 @@ repos:
       - id: tox-ini-fmt
         args: ["-p", "fix"]
   - repo: https://github.com/PyCQA/flake8
-    rev: "3.9.2"
+    rev: "4.0.1"
     hooks:
       - id: flake8
         additional_dependencies: [
-            "flake8-bugbear == 21.4.3",
+            "flake8-bugbear == 21.9.2",
             "flake8-unused-arguments == 0.0.6",
-            "flake8-comprehensions == 3.5.0",
+            "flake8-comprehensions == 3.7.0",
             "flake8-spellcheck == 0.24.0",
             "flake8-pytest-style == 1.4.2",
         ]
