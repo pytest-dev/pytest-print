@@ -6,7 +6,6 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/pytest-print?style=flat-square)](https://pypistats.org/packages/pytest-print)
 [![PyPI - License](https://img.shields.io/pypi/l/pytest-print?style=flat-square)](https://opensource.org/licenses/MIT)
 [![check](https://github.com/pytest-dev/pytest-print/workflows/check/badge.svg)](https://github.com/pytest-dev/pytest-print/actions?query=workflow%3Acheck)
-[![codecov](https://codecov.io/gh/pytest-dev/pytest-print/branch/master/graph/badge.svg)](https://codecov.io/gh/pytest-dev/pytest-print)
 [![Code style:
 black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
 
