@@ -3,7 +3,6 @@ from shutil import copy2
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from _pytest.pytester import Testdir
 
 _EXAMPLE = Path(__file__).parent / "example.py"
 
@@ -15,21 +14,21 @@ def test_version() -> None:
 
 
 @pytest.fixture()
-def example(testdir: Testdir) -> Testdir:
+def example(testdir: pytest.Testdir) -> pytest.Testdir:
     dest = Path(str(testdir.tmpdir / "test_example.py"))
     # dest.symlink_to(_EXAMPLE)  # for local debugging use this
     copy2(str(_EXAMPLE), str(dest))
     return testdir
 
 
-def test_progress_no_v(example: Testdir) -> None:
+def test_progress_no_v(example: pytest.Testdir) -> None:
     result = example.runpytest()
     result.assert_outcomes(passed=2)
     assert "	start server from virtual env" not in result.outlines
     assert "global peace" not in result.outlines
 
 
-def test_progress_v_no_relative(example: Testdir, monkeypatch: MonkeyPatch) -> None:
+def test_progress_v_no_relative(example: pytest.Testdir, monkeypatch: MonkeyPatch) -> None:
     monkeypatch.setattr("_pytest._io.terminalwriter.get_terminal_width", lambda: 80)
     monkeypatch.setenv("COLUMNS", str(80))
     result_verbose = example.runpytest("-v", "--print")
@@ -54,7 +53,7 @@ def test_progress_v_no_relative(example: Testdir, monkeypatch: MonkeyPatch) -> N
     assert found == report_lines
 
 
-def test_progress_v_relative(example: Testdir) -> None:
+def test_progress_v_relative(example: pytest.Testdir) -> None:
     result_verbose_relative = example.runpytest(
         "--print", "-v", "--print-relative-time", "-k", "test_server_parallel_requests"
     )
@@ -79,7 +78,7 @@ def test_progress_v_relative(example: Testdir) -> None:
     ], session
 
 
-def test_progress_no_v_but_with_print_request(example: Testdir) -> None:
+def test_progress_no_v_but_with_print_request(example: pytest.Testdir) -> None:
     result = example.runpytest("--print")
     result.assert_outcomes(passed=2)
     assert "	start server from virtual env" in result.outlines
