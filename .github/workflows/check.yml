@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Setup python for tox
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: Install tox
@@ -38,7 +38,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup python for test ${{ matrix.py }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.py }}
       - name: Pick environment to run
@@ -83,7 +83,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Python "3.10"
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: Install tox
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Setup python to build package
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.10"
       - name: Install build
