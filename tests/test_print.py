@@ -15,7 +15,7 @@ def test_version() -> None:
 
 @pytest.fixture()
 def example(testdir: pytest.Testdir) -> pytest.Testdir:
-    dest = Path(str(testdir.tmpdir / "test_example.py"))
+    dest = Path(str(testdir.tmpdir)) / "test_example.py"
     # dest.symlink_to(_EXAMPLE)  # for local debugging use this
     copy2(str(_EXAMPLE), str(dest))
     return testdir
