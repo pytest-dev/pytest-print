@@ -11,6 +11,10 @@ repos:
       - id: debug-statements
       - id: end-of-file-fixer
       - id: trailing-whitespace
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.2
+    hooks:
+      - id: codespell
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.37.3
     hooks:
