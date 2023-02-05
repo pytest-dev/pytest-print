@@ -31,7 +31,7 @@ The plugin provides ability to print information during the tests runs.
 
 ### sub-step reporting
 
-For tests that are long running this can provide a feedback ot the end-user that what is just happening in the
+For tests that are long running this can provide a feedback to the end-user that what is just happening in the
 background.
 
 ```python
