@@ -1,13 +1,9 @@
 [build-system]
-requires = ["setuptools>=67.1", "setuptools_scm>=7.1"]
 build-backend = 'setuptools.build_meta'
-
-[tool.black]
-line-length = 120
-
-[tool.isort]
-profile = "black"
-known_first_party = ["pytest_print"]
+requires = [
+  "setuptools>=67.1",
+  "setuptools_scm>=7.1",
+]
 
 [tool.setuptools_scm]
 write_to = "src/pytest_print/version.py"
@@ -16,3 +12,10 @@ write_to_template = """
 
 __version__ = "{version}"
 """
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+known_first_party = ["pytest_print"]
