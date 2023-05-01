@@ -19,7 +19,7 @@ jobs:
         py:
           - "3.11"
           - "3.10"
-          - "pypy-3.7-v7.3.7"  # ahead to start it earlier because takes longer
+          - "pypy-3.7-v7.3.7" # ahead to start it earlier because takes longer
           - "3.9"
           - "3.8"
           - "3.7"
@@ -96,7 +96,7 @@ jobs:
 
   publish:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-    needs: [ check, test ]
+    needs: [check, test]
     runs-on: ubuntu-22.04
     steps:
       - name: Setup python to build package

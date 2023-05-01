@@ -1,17 +1,56 @@
 [build-system]
-build-backend = 'setuptools.build_meta'
+build-backend = "hatchling.build"
 requires = [
-  "setuptools>=67.6.1",
-  "setuptools_scm>=7.1",
+  "hatch-vcs>=0.3",
+  "hatchling>=1.14",
 ]
 
-[tool.setuptools_scm]
-write_to = "src/pytest_print/version.py"
-write_to_template = """
-\"\"\" Version information \"\"\"
+[project]
+name = "pytest-print"
+description = "pytest-print adds the printer fixture you can use to print messages to the user (directly to the pytest runner, not stdout)"
+readme = "README.md"
+keywords = [
+  "env",
+  "pytest",
+]
+license.file = "LICENSE"
+maintainers = [{ name = "Bernát Gábor", email = "gaborjbernat@gmail.com" }]
+requires-python = ">=3.7"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dynamic = [
+  "version",
+]
+dependencies = [
+  "pytest>=7.3.1",
+]
+optional-dependencies.test = [
+  "coverage>=7.2.3",
+  "pytest-mock>=3.10",
+]
+urls.Homepage = "https://github.com/pytest-dev/pytest-print"
+urls.Source = "https://github.com/pytest-dev/pytest-print"
+urls.Tracker = "https://github.com/pytest-dev/pytest-print/issues"
+[project.entry-points.pytest11]
+env = "pytest_print"
 
-__version__ = "{version}"
-"""
+[tool.hatch]
+build.hooks.vcs.version-file = "src/pytest_print/_version.py"
+version.source = "vcs"
 
 [tool.black]
 line-length = 120
@@ -19,3 +58,35 @@ line-length = 120
 [tool.isort]
 profile = "black"
 known_first_party = ["pytest_print"]
+
+[tool.flake8]
+ignore = ["E203"]
+max-complexity = 22
+max-line-length = 120
+unused-arguments-ignore-abstract-functions = true
+noqa-require-code = true
+dictionaries = ["en_US", "python", "technical", "django"]
+
+[tool.coverage]
+run.source = ["pytest_print", "tests"]
+run.dynamic_context = "test_function"
+run.branch = true
+run.parallel = true
+report.omit = ["tests/example.py"]
+report.fail_under = 78
+report.show_missing = true
+html.show_contexts = true
+html.skip_covered = false
+paths.source = [
+  "src",
+  ".tox*/*/lib/python*/site-packages",
+  ".tox*/pypy*/site-packages",
+  ".tox*\\*\\Lib\\site-packages",
+  "*/src",
+  "*\\src",
+]
+
+[tool.mypy]
+python_version = "3.11"
+show_error_codes = true
+strict = true
