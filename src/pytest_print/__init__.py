@@ -6,7 +6,7 @@ from _pytest.config.argparsing import Parser
 from _pytest.fixtures import SubRequest
 from _pytest.terminal import TerminalReporter
 
-from .version import __version__
+from ._version import __version__
 
 
 def pytest_addoption(parser: Parser) -> None:
