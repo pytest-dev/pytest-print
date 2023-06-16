@@ -1,8 +1,13 @@
+from __future__ import annotations
+
 from pathlib import Path
 from shutil import copy2
+from typing import TYPE_CHECKING
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
+
+if TYPE_CHECKING:
+    from _pytest.monkeypatch import MonkeyPatch
 
 _EXAMPLE = Path(__file__).parent / "example.py"
 
@@ -16,7 +21,6 @@ def test_version() -> None:
 @pytest.fixture()
 def example(testdir: pytest.Testdir) -> pytest.Testdir:
     dest = Path(str(testdir.tmpdir)) / "test_example.py"
-    # dest.symlink_to(_EXAMPLE)  # for local debugging use this
     copy2(str(_EXAMPLE), str(dest))
     return testdir
 
@@ -55,7 +59,11 @@ def test_progress_v_no_relative(example: pytest.Testdir, monkeypatch: MonkeyPatc
 
 def test_progress_v_relative(example: pytest.Testdir) -> None:
     result_verbose_relative = example.runpytest(
-        "--print", "-v", "--print-relative-time", "-k", "test_server_parallel_requests"
+        "--print",
+        "-v",
+        "--print-relative-time",
+        "-k",
+        "test_server_parallel_requests",
     )
     out = "\n".join(result_verbose_relative.outlines)
     result_verbose_relative.assert_outcomes(passed=1)
