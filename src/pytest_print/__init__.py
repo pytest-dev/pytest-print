@@ -1,12 +1,17 @@
-from datetime import datetime
-from typing import Callable, Optional
+"""Pytest print functionality."""
+from __future__ import annotations
+
+from timeit import default_timer
+from typing import TYPE_CHECKING, Callable
 
 import pytest
-from _pytest.config.argparsing import Parser
-from _pytest.fixtures import SubRequest
-from _pytest.terminal import TerminalReporter
 
 from ._version import __version__
+
+if TYPE_CHECKING:
+    from _pytest.config.argparsing import Parser
+    from _pytest.fixtures import SubRequest
+    from _pytest.terminal import TerminalReporter
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -29,7 +34,7 @@ def pytest_addoption(parser: Parser) -> None:
 
 @pytest.fixture(name="printer")
 def printer(request: SubRequest) -> Callable[[str], None]:
-    """pytest plugin to print test progress steps in verbose mode"""
+    """Pytest plugin to print test progress steps in verbose mode."""
     return create_printer(request)
 
 
@@ -48,21 +53,21 @@ def create_printer(request: SubRequest) -> Callable[[str], None]:
     return no_op
 
 
-def no_op(msg: str) -> None:  # noqa: U100
-    """Do nothing"""
+def no_op(msg: str) -> None:  # noqa: ARG001
+    """Do nothing."""
 
 
 class State:
-    def __init__(self, print_relative: bool, reporter: TerminalReporter) -> None:
+    def __init__(self, print_relative: bool, reporter: TerminalReporter) -> None:  # noqa: FBT001
         self._reporter = reporter
-        self._start = datetime.now() if print_relative else None
+        self._start = default_timer() if print_relative else None
         self._print_relative = print_relative
 
     @property
-    def elapsed(self) -> Optional[float]:
+    def elapsed(self) -> float | None:
         if self._start is None:
             return None  # pragma: no cover
-        return (datetime.now() - self._start).total_seconds()
+        return default_timer() - self._start
 
     def printer(self, msg: str) -> None:
         msg = "\t{}{}".format(f"{self.elapsed}\t" if self._print_relative else "", msg)
