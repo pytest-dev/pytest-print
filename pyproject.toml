@@ -47,7 +47,7 @@ urls.Homepage = "https://github.com/pytest-dev/pytest-print"
 urls.Source = "https://github.com/pytest-dev/pytest-print"
 urls.Tracker = "https://github.com/pytest-dev/pytest-print/issues"
 [project.entry-points.pytest11]
-env = "pytest_print"
+print = "pytest_print"
 
 [tool.hatch]
 build.hooks.vcs.version-file = "src/pytest_print/_version.py"
