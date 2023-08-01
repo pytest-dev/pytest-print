@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from ._version import __version__
-
 if TYPE_CHECKING:
     from _pytest.config.argparsing import Parser
     from _pytest.fixtures import SubRequest
     from _pytest.terminal import TerminalReporter
+
+    from ._version import __version__
 
 
 def pytest_addoption(parser: Parser) -> None:
