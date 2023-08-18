@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/pytest-print?style=flat-square)](https://pypi.org/project/pytest-print)
 [![PyPI - Implementation](https://img.shields.io/pypi/implementation/pytest-print?style=flat-square)](https://pypi.org/project/pytest-print)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pytest-print?style=flat-square)](https://pypi.org/project/pytest-print)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/pytest-print?style=flat-square)](https://pypistats.org/packages/pytest-print)
+[![Downloads](https://static.pepy.tech/badge/pytest-print/month)](https://pepy.tech/project/pytest-print)
 [![PyPI - License](https://img.shields.io/pypi/l/pytest-print?style=flat-square)](https://opensource.org/licenses/MIT)
 [![check](https://github.com/pytest-dev/pytest-print/workflows/check/badge.svg)](https://github.com/pytest-dev/pytest-print/actions?query=workflow%3Acheck)
 [![Code style:
