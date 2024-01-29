@@ -1,4 +1,5 @@
 """Pytest print functionality."""
+
 from __future__ import annotations
 
 from timeit import default_timer
