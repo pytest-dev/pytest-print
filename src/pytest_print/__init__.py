@@ -74,7 +74,7 @@ class State:
         msg = "\t{}{}".format(f"{self.elapsed}\t" if self._print_relative else "", msg)
         self._reporter.write_line(msg)
 
-    __slots__ = ("_start", "_print_relative", "_reporter")
+    __slots__ = ("_print_relative", "_reporter", "_start")
 
 
 __all__ = [

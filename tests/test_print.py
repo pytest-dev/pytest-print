@@ -13,7 +13,7 @@ _EXAMPLE = Path(__file__).parent / "example.py"
 
 
 def test_version() -> None:
-    import pytest_print
+    import pytest_print  # noqa: PLC0415
 
     assert pytest_print.__version__ is not None
 

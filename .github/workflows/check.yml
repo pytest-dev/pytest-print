@@ -2,7 +2,7 @@ name: check
 on:
   workflow_dispatch:
   push:
-    branches: "main"
+    branches: ["main"]
     tags-ignore: ["**"]
   pull_request:
   schedule:
@@ -31,7 +31,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install tox
-        run: python -m pip install tox
+        run: python -m pip install tox-uv
       - uses: actions/checkout@v4
       - name: setup python for test ${{ matrix.py }}
         uses: actions/setup-python@v5
@@ -71,7 +71,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install tox
-        run: python -m pip install tox
+        run: python -m pip install tox-uv
       - name: run check for ${{ matrix.tox_env }}
         run: python -m tox -e ${{ matrix.tox_env }}
         env:
