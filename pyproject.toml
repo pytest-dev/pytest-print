@@ -48,44 +48,44 @@ urls.Homepage = "https://github.com/pytest-dev/pytest-print"
 urls.Source = "https://github.com/pytest-dev/pytest-print"
 urls.Tracker = "https://github.com/pytest-dev/pytest-print/issues"
 entry-points.pytest11.print = "pytest_print"
+
 [tool.hatch]
 build.hooks.vcs.version-file = "src/pytest_print/_version.py"
 version.source = "vcs"
 
 [tool.ruff]
-line-length = 120
 target-version = "py38"
-lint.isort = { known-first-party = [
-  "pytest_print",
-], required-imports = [
-  "from __future__ import annotations",
-] }
+line-length = 120
+format.preview = true
+format.docstring-code-line-length = 100
+format.docstring-code-format = true
 lint.select = [
   "ALL",
 ]
 lint.ignore = [
   "ANN101", # no type annotation for self
   "ANN401", # allow Any as type annotation
+  "COM812", # Conflict with formatter
+  "CPY",    # No copyright statements
   "D203",   # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
   "D212",   # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
-  "S104",   # Possible binding to all interface
-  "COM812", # Conflict with formatter
   "ISC001", # Conflict with formatter
-  "CPY",    # No copyright statements
+  "S104",   # Possible binding to all interface
 ]
-lint.preview = true
-format.preview = true
-format.docstring-code-format = true
-format.docstring-code-line-length = 100
-[tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = [
-  "S101",    # asserts allowed in tests...
+lint.per-file-ignores."tests/**/*.py" = [
+  "D",       # don"t care about documentation in tests
   "FBT",     # don't care about booleans as positional arguments in tests
   "INP001",  # no implicit namespace
-  "D",       # don"t care about documentation in tests
-  "S603",    # `subprocess` call: check for execution of untrusted input
   "PLR2004", # Magic value used in comparison, consider replacing with a constant variable
+  "S101",    # asserts allowed in tests...
+  "S603",    # `subprocess` call: check for execution of untrusted input
 ]
+lint.isort = { known-first-party = [
+  "pytest_print",
+], required-imports = [
+  "from __future__ import annotations",
+] }
+lint.preview = true
 
 [tool.codespell]
 builtin = "clear,usage,en-GB_to_en-US"
