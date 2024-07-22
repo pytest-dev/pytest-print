@@ -18,7 +18,7 @@ def test_version() -> None:
     assert pytest_print.__version__ is not None
 
 
-@pytest.fixture()
+@pytest.fixture
 def example(testdir: pytest.Testdir) -> pytest.Testdir:
     dest = Path(str(testdir.tmpdir)) / "test_example.py"
     copy2(str(_EXAMPLE), str(dest))
