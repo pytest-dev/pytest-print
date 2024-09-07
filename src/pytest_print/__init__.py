@@ -54,7 +54,7 @@ def create_printer(request: SubRequest) -> Callable[[str], None]:
     return no_op
 
 
-def no_op(msg: str) -> None:  # noqa: ARG001
+def no_op(msg: str) -> None:
     """Do nothing."""
 
 
