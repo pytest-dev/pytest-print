@@ -2,7 +2,7 @@
 build-backend = "hatchling.build"
 requires = [
   "hatch-vcs>=0.4",
-  "hatchling>=1.21.1",
+  "hatchling>=1.25",
 ]
 
 [project]
@@ -30,6 +30,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -37,12 +38,12 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "pytest>=8.0.1",
+  "pytest>=8.3.2",
 ]
 optional-dependencies.test = [
   "covdefaults>=2.3",
-  "coverage>=7.4.2",
-  "pytest-mock>=3.12",
+  "coverage>=7.6.1",
+  "pytest-mock>=3.14",
 ]
 urls.Homepage = "https://github.com/pytest-dev/pytest-print"
 urls.Source = "https://github.com/pytest-dev/pytest-print"
@@ -69,15 +70,16 @@ lint.ignore = [
   "CPY",    # No copyright statements
   "D203",   # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
   "D212",   # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
+  "DOC",    # no support
   "ISC001", # Conflict with formatter
   "S104",   # Possible binding to all interface
 ]
 lint.per-file-ignores."tests/**/*.py" = [
-  "D",       # don"t care about documentation in tests
+  "D",       # don't care about documentation in tests
   "FBT",     # don't care about booleans as positional arguments in tests
   "INP001",  # no implicit namespace
   "PLR2004", # Magic value used in comparison, consider replacing with a constant variable
-  "S101",    # asserts allowed in tests...
+  "S101",    # asserts allowed in tests
   "S603",    # `subprocess` call: check for execution of untrusted input
 ]
 lint.isort = { known-first-party = [
@@ -91,6 +93,9 @@ lint.preview = true
 builtin = "clear,usage,en-GB_to_en-US"
 write-changes = true
 count = true
+
+[tool.pyproject-fmt]
+max_supported_python = "3.13"
 
 [tool.coverage]
 run.source = [
@@ -120,6 +125,6 @@ run.plugins = [
 ]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 show_error_codes = true
 strict = true
