@@ -5,9 +5,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pytest-print?style=flat-square)](https://pypi.org/project/pytest-print)
 [![Downloads](https://static.pepy.tech/badge/pytest-print/month)](https://pepy.tech/project/pytest-print)
 [![PyPI - License](https://img.shields.io/pypi/l/pytest-print?style=flat-square)](https://opensource.org/licenses/MIT)
-[![check](https://github.com/pytest-dev/pytest-print/workflows/check/badge.svg)](https://github.com/pytest-dev/pytest-print/actions?query=workflow%3Acheck)
-[![Code style:
-black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/psf/black)
+[![check](https://github.com/pytest-dev/pytest-print/actions/workflows/check.yaml/badge.svg)](https://github.com/pytest-dev/pytest-print/actions/workflows/check.yaml)
 
 Allows to print extra content onto the PyTest reporting. This can be used for example to report sub-steps for long
 running tests, or to print debug information in your tests when you cannot debug the code.
@@ -31,8 +29,7 @@ The plugin provides ability to print information during the tests runs.
 
 ### sub-step reporting
 
-For tests that are long running this can provide a feedback to the end-user that what is just happening in the
-background.
+For tests that are long running this can provide feedback to the end-user that what is just happening in the background.
 
 ```python
 def test_server_parallel_requests(printer, tmpdir):
