@@ -47,7 +47,7 @@ def printer_session(request: SubRequest) -> Callable[[str], None]:
 def create_printer(request: SubRequest) -> Callable[[str], None]:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
-        capture_manager = request.config.pluginmanager.get_plugin('capturemanager')
+        capture_manager = request.config.pluginmanager.get_plugin("capturemanager")
         if terminal_reporter is not None:  # pragma: no branch
             state = State(request.config.getoption("pytest_print_relative_time"), terminal_reporter, capture_manager)
             return state.printer
@@ -77,7 +77,7 @@ class State:
         with self._capture_manager.global_and_fixture_disabled():
             self._reporter.write_line(msg)
 
-    __slots__ = ("_print_relative", "_reporter", "_capture_manager", "_start")
+    __slots__ = ("_capture_manager", "_print_relative", "_reporter", "_start")
 
 
 __all__ = [
