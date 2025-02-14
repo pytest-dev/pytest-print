@@ -10,6 +10,7 @@ import pytest
 from ._version import __version__
 
 if TYPE_CHECKING:
+    from _pytest.capture import CaptureManager
     from _pytest.config.argparsing import Parser
     from _pytest.fixtures import SubRequest
     from _pytest.terminal import TerminalReporter
@@ -47,7 +48,7 @@ def printer_session(request: SubRequest) -> Callable[[str], None]:
 def create_printer(request: SubRequest) -> Callable[[str], None]:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
-        capture_manager = request.config.pluginmanager.get_plugin("capturemanager")
+        capture_manager = request.config.pluginmanager.getplugin("capturemanager")
         if terminal_reporter is not None:  # pragma: no branch
             state = State(request.config.getoption("pytest_print_relative_time"), terminal_reporter, capture_manager)
             return state.printer
@@ -60,7 +61,7 @@ def no_op(msg: str) -> None:
 
 
 class State:
-    def __init__(self, print_relative: bool, reporter: TerminalReporter, capture_manager) -> None:  # noqa: FBT001
+    def __init__(self, print_relative: bool, reporter: TerminalReporter, capture_manager: CaptureManager) -> None:  # noqa: FBT001
         self._reporter = reporter
         self._capture_manager = capture_manager
         self._start = default_timer() if print_relative else None
