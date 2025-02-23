@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from _pytest.terminal import TerminalReporter
 
 
-# define some datatypes for the pprint and printer_factory fixtures
+# define some datatypes for the pprint and pprinter_factory fixtures
 
 
 class PPrinterType(Protocol):
@@ -50,39 +50,39 @@ def pytest_addoption(parser: Parser) -> None:
 @pytest.fixture(name="printer")
 def printer(request: SubRequest) -> Callable[[str, str | None], None]:
     """Pytest plugin to print test progress steps in verbose mode."""
-    return create_printer(request)
+    return _create_printer(request)
 
 
 @pytest.fixture(scope="session", name="printer_session")
 def printer_session(request: SubRequest) -> Callable[[str, str | None], None]:
-    return create_printer(request)
+    return _create_printer(request)
 
 
 @pytest.fixture(scope="session")
 def pprinter(request: SubRequest) -> Callable[[str, str | None], None]:
     """Pytest plugin to print test progress steps in verbose mode."""
-    return create_printer(request, " " * 2, "⏩", " ", "")
+    return _create_printer(request, " " * 2, "⏩", " ", "")
 
 
 @pytest.fixture(scope="session")
-def printer_factory(
+def pprinter_factory(
     request: SubRequest,
 ) -> PPrinterFactoryType:
     def factory(
         icon: str | None = None, head: str | None = None, space: str | None = None, first: str | None = None
     ) -> PPrinterType:
-        return create_printer(request, head, icon, space, first)
+        return _create_printer(request, head, icon, space, first)
 
     return factory
 
 
-def create_printer(
+def _create_printer(
     request: SubRequest,
     head: str | None = None,
     icon: str | None = None,
     space: str | None = None,
     first: str | None = None,
-) -> PPrinterType:  # Callable[[str, str | None], None]:
+) -> PPrinterType:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
         capture_manager = request.config.pluginmanager.getplugin("capturemanager")

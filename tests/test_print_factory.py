@@ -53,7 +53,7 @@ test_example2.py::test_server_parallel_requests{spc}
       🚀 do the parallel request test
 
 test_example2.py::test_server_parallel_requests PASSED                   [ 66%]
-test_example2.py::test_printer_factory_usage{spc}
+test_example2.py::test_pprinter_factory_usage{spc}
   ⏩ start here the test start
       🚀 start a sub printer
           🧹 start a sub sub printer
@@ -62,7 +62,7 @@ test_example2.py::test_printer_factory_usage{spc}
       🚀 end a sub printer
   ⏩ end here the test end
 
-test_example2.py::test_printer_factory_usage PASSED                      [100%]
+test_example2.py::test_pprinter_factory_usage PASSED                     [100%]
   ⏩ teardown global peace
 """[1:]
     )
