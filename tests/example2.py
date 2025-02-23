@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from time import sleep
-from typing import Callable, Iterator
+from typing import TYPE_CHECKING, Callable, Iterator
 
 import pytest
+
+if TYPE_CHECKING:
+    from pytest_print import PPrinterFactoryType, PPrinterType
 
 
 def create_virtual_environment() -> None:
@@ -19,12 +22,12 @@ def parallel_requests() -> None:
 
 
 @pytest.fixture(scope="session")
-def pprinter_session(printer_factory: Callable) -> Callable[[str], None]:
+def pprinter_session(printer_factory: PPrinterFactoryType) -> PPrinterType:
     return printer_factory("⏩", "  ", " ", "")
 
 
 @pytest.fixture(name="pprinter")
-def pprinter(pprinter_session: Callable) -> Callable[[str], None]:
+def pprinter(pprinter_session: PPrinterType) -> PPrinterType:
     return pprinter_session.subprinter("🚀")
 
 
@@ -52,7 +55,7 @@ def test_server_parallel_requests(pprinter: Callable[[str], None]) -> None:
     parallel_requests()
 
 
-def test_printer_factory_usage(printer_factory: Callable[[str, str | None], None]) -> None:
+def test_printer_factory_usage(printer_factory: PPrinterFactoryType) -> None:
     printer = printer_factory("⏩", "  ", " ", "")
     printer("start here the test start")
 

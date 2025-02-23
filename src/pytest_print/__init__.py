@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import dataclasses as dc
 from timeit import default_timer
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, Protocol
 
 import pytest
 
@@ -15,6 +15,18 @@ if TYPE_CHECKING:
     from _pytest.config.argparsing import Parser
     from _pytest.fixtures import SubRequest
     from _pytest.terminal import TerminalReporter
+
+
+# define some datatypes for the pprint and printer_factory fixtures
+
+
+class PPrinterType(Protocol):
+    def subprinter(self, icon: str | None = None) -> PPrinterType: ...
+
+    def __call__(self, msg: str, icon: str | None = None) -> None: ...
+
+
+PPrinterFactoryType = Callable[[str | None, str | None, str | None, str | None], PPrinterType]
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -53,10 +65,12 @@ def pprinter(request: SubRequest) -> Callable[[str, str | None], None]:
 
 
 @pytest.fixture(scope="session")
-def printer_factory(request: SubRequest) -> Callable[[str | None, str | None, str | None], None]:
+def printer_factory(
+    request: SubRequest,
+) -> PPrinterFactoryType:
     def factory(
         icon: str | None = None, head: str | None = None, space: str | None = None, first: str | None = None
-    ) -> Callable[[str], None]:
+    ) -> PPrinterType:
         return create_printer(request, head, icon, space, first)
 
     return factory
@@ -68,12 +82,12 @@ def create_printer(
     icon: str | None = None,
     space: str | None = None,
     first: str | None = None,
-) -> Callable[[str], None]:
+) -> PPrinterType:  # Callable[[str, str | None], None]:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
         capture_manager = request.config.pluginmanager.getplugin("capturemanager")
         if terminal_reporter is not None:  # pragma: no branch
-            fmt = RecordFormatter(head=head, icon=icon, space=space, first=first)
+            fmt = RecordFormatter(head=head, icon=icon, space=space, first=first)  # type: ignore # noqa: PGH003
             return State(
                 terminal_reporter,
                 capture_manager,
@@ -81,7 +95,7 @@ def create_printer(
                 _start=default_timer() if request.config.getoption("pytest_print_relative_time") else None,
             )
 
-    return NoOp()
+    return NoOpState()
 
 
 @dc.dataclass(slots=True)
@@ -103,15 +117,15 @@ class RecordFormatter:
 
 
 @dc.dataclass(slots=True)
-class NoOp:
-    parent: NoOp | None = None
+class NoOpState:
+    parent: NoOpState | None = None
 
     def __call__(self, msg: str, icon: str | None = None) -> None:
         """Do nothing."""
 
     @staticmethod
-    def subprinter(_icon: str | None = None) -> State:
-        return NoOp()
+    def subprinter(_icon: str | None = None) -> NoOpState:
+        return NoOpState()
 
 
 @dc.dataclass(slots=True)
@@ -123,8 +137,8 @@ class State:
     level: int = 0
 
     # this will be set depending on print_relative
-    _start: Callable | None = None
-    parent: NoOp | None = None
+    _start: float | None = None
+    parent: NoOpState | State | None = None
 
     @property
     def elapsed(self) -> float | None:
@@ -142,7 +156,7 @@ class State:
             self._reporter.write_line(msg)
 
     def subprinter(self, icon: str | None = None) -> State:
-        fmt = dc.replace(self.fmt, icon=icon)
+        fmt = dc.replace(self.fmt, icon=icon)  # type: ignore # noqa: PGH003
         return self.__class__(self._reporter, self._capture_manager, fmt, self.level + 1, self._start, self)
 
 

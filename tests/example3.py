@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pytest_print import PPrinterType
 
 
-def test_pprinter_usage(pprinter: Callable[[str, str | None], None]) -> None:
+def test_pprinter_usage(pprinter: PPrinterType) -> None:
     pprinter("start here the test start")
 
     printer1 = pprinter.subprinter("🚀")
