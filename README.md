@@ -57,3 +57,50 @@ PASSED                                                                   [100%]
 
 =========================== 1 passed in 0.02 seconds ===========================
 ```
+
+### factory tests
+
+If you need nested messages you can use the `printer_factory` fixture or the `pprinter`.
+
+```python
+def test_pprinter_usage(pprinter):
+    pprinter("start here the test start")
+
+    printer1 = pprinter.subprinter("🚀")
+    printer1("start a sub printer")
+
+    printer2 = printer1.subprinter("🧹")
+    printer2("start a sub sub printer")
+
+    # you can override the `icon` on a per-message
+    printer2("a message with a twist", "🔄")
+    printer2("end a sub sub printer")
+
+    printer1("end a sub printer")
+
+    pprinter("end here the test end")
+```
+
+```bash
+$ py.test --vv
+============================= test session starts ==============================
+platform linux -- Python 3.13.2, pytest-8.3.4, pluggy-1.5.0 -- .venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /home/users/antonio/Projects/github/pytest-print
+configfile: pyproject.toml
+plugins: print-0.1.dev168+g4000034
+collected 1 item
+
+tests/example3.py::test_pprinter_usage
+  ⏩ start here the test start
+      🚀 start a sub printer
+          🧹 start a sub sub printer
+          🔄 a message with a twist
+          🧹 end a sub sub printer
+      🚀 end a sub printer
+  ⏩ end here the test end
+
+tests/example3.py::test_pprinter_usage PASSED                            [100%]
+
+============================== 1 passed in 0.01s ===============================
+```

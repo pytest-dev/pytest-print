@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses as dc
 from timeit import default_timer
 from typing import TYPE_CHECKING, Callable
 
@@ -35,37 +36,95 @@ def pytest_addoption(parser: Parser) -> None:
 
 
 @pytest.fixture(name="printer")
-def printer(request: SubRequest) -> Callable[[str], None]:
+def printer(request: SubRequest) -> Callable[[str, str | None], None]:
     """Pytest plugin to print test progress steps in verbose mode."""
     return create_printer(request)
 
 
 @pytest.fixture(scope="session", name="printer_session")
-def printer_session(request: SubRequest) -> Callable[[str], None]:
+def printer_session(request: SubRequest) -> Callable[[str, str | None], None]:
     return create_printer(request)
 
 
-def create_printer(request: SubRequest) -> Callable[[str], None]:
+@pytest.fixture(scope="session")
+def pprinter(request: SubRequest) -> Callable[[str, str | None], None]:
+    """Pytest plugin to print test progress steps in verbose mode."""
+    return create_printer(request, " " * 2, "⏩", " ", "")
+
+
+@pytest.fixture(scope="session")
+def printer_factory(request: SubRequest) -> Callable[[str | None, str | None, str | None], None]:
+    def factory(
+        icon: str | None = None, head: str | None = None, space: str | None = None, first: str | None = None
+    ) -> Callable[[str], None]:
+        return create_printer(request, head, icon, space, first)
+
+    return factory
+
+
+def create_printer(
+    request: SubRequest,
+    head: str | None = None,
+    icon: str | None = None,
+    space: str | None = None,
+    first: str | None = None,
+) -> Callable[[str], None]:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
         capture_manager = request.config.pluginmanager.getplugin("capturemanager")
         if terminal_reporter is not None:  # pragma: no branch
-            state = State(request.config.getoption("pytest_print_relative_time"), terminal_reporter, capture_manager)
-            return state.printer
+            fmt = RecordFormatter(head=head, icon=icon, space=space, first=first)
+            return State(
+                terminal_reporter,
+                capture_manager,
+                fmt,
+                _start=default_timer() if request.config.getoption("pytest_print_relative_time") else None,
+            )
 
-    return no_op
+    return NoOp()
 
 
-def no_op(msg: str) -> None:
-    """Do nothing."""
+@dc.dataclass(slots=True)
+class RecordFormatter:
+    # this is the complete message line
+    head: str = "\t"
+    icon: str = ""
+    space: str = ""
+    first: str = ""
+
+    def __post_init__(self) -> None:
+        for field in dc.fields(self):
+            if getattr(self, field.name) is None:
+                setattr(self, field.name, field.default)
+
+    @property
+    def pre(self) -> str:
+        return f"{self.head}{self.icon}{self.space}"
 
 
+@dc.dataclass(slots=True)
+class NoOp:
+    parent: NoOp | None = None
+
+    def __call__(self, msg: str, icon: str | None = None) -> None:
+        """Do nothing."""
+
+    @staticmethod
+    def subprinter(_icon: str | None = None) -> State:
+        return NoOp()
+
+
+@dc.dataclass(slots=True)
 class State:
-    def __init__(self, print_relative: bool, reporter: TerminalReporter, capture_manager: CaptureManager) -> None:  # noqa: FBT001
-        self._reporter = reporter
-        self._capture_manager = capture_manager
-        self._start = default_timer() if print_relative else None
-        self._print_relative = print_relative
+    _reporter: TerminalReporter
+    _capture_manager: CaptureManager
+
+    fmt: RecordFormatter
+    level: int = 0
+
+    # this will be set depending on print_relative
+    _start: Callable | None = None
+    parent: NoOp | None = None
 
     @property
     def elapsed(self) -> float | None:
@@ -73,12 +132,18 @@ class State:
             return None  # pragma: no cover
         return default_timer() - self._start
 
-    def printer(self, msg: str) -> None:
-        msg = "\t{}{}".format(f"{self.elapsed}\t" if self._print_relative else "", msg)
+    def __call__(self, msg: str, icon: str | None = None) -> None:
+        fmt = self.fmt if icon is None else dc.replace(self.fmt, icon=icon)
+
+        timer = f"{self.elapsed}\t" if self.elapsed else ""
+        indent = (" " * len(fmt.first) if self.level else fmt.first) + " " * self.level * len(fmt.pre)
+        msg = f"{indent}{fmt.pre}{timer}{msg}"
         with self._capture_manager.global_and_fixture_disabled():
             self._reporter.write_line(msg)
 
-    __slots__ = ("_capture_manager", "_print_relative", "_reporter", "_start")
+    def subprinter(self, icon: str | None = None) -> State:
+        fmt = dc.replace(self.fmt, icon=icon)
+        return self.__class__(self._reporter, self._capture_manager, fmt, self.level + 1, self._start, self)
 
 
 __all__ = [
