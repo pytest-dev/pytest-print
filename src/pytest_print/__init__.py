@@ -120,7 +120,7 @@ def create_printer(  # noqa: PLR0913
     return NoOpState()
 
 
-@dc.dataclass(slots=True)
+@dc.dataclass
 class RecordFormatter:
     # this is the complete message line
     head: str = ""
@@ -163,7 +163,7 @@ class RecordFormatter:
         return f"{indentation}{timer}{spacer}{self.pre}{msg}"
 
 
-@dc.dataclass(slots=True)
+@dc.dataclass
 class NoOpState:
     parent: NoOpState | None = None
 
@@ -175,7 +175,7 @@ class NoOpState:
         return NoOpState()
 
 
-@dc.dataclass(slots=True)
+@dc.dataclass
 class State:
     _reporter: TerminalReporter
     _capture_manager: CaptureManager
