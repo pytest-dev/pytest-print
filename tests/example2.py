@@ -23,7 +23,7 @@ def parallel_requests() -> None:
 
 @pytest.fixture(scope="session")
 def pprinter_session(pprinter_factory: PPrinterFactoryType) -> PPrinterType:
-    return pprinter_factory("⏩", "  ", " ", "")
+    return pprinter_factory(indentation="  ", head=" ", space=" ", icon="⏩", timerfmt="[{elapsed:.20f}]")
 
 
 @pytest.fixture(name="pprinter")
@@ -56,7 +56,7 @@ def test_server_parallel_requests(pprinter: Callable[[str], None]) -> None:
 
 
 def test_pprinter_factory_usage(pprinter_factory: PPrinterFactoryType) -> None:
-    printer = pprinter_factory("⏩", "  ", " ", "")
+    printer = pprinter_factory(icon="⏩", head=" ", space=" ", indentation="..", timerfmt="[{elapsed:.20f}]")
     printer("start here the test start")
 
     printer1 = printer.subprinter("🚀")

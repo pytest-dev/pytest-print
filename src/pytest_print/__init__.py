@@ -26,7 +26,16 @@ class PPrinterType(Protocol):
     def __call__(self, msg: str, icon: str | None = None) -> None: ...
 
 
-PPrinterFactoryType = Callable[[str | None, str | None, str | None, str | None], PPrinterType]
+class PPrinterFactoryType(Protocol):
+    def __call__(
+        self,
+        *,
+        icon: str | None,
+        head: str | None = None,
+        space: str | None = None,
+        indentation: str | None = None,
+        timerfmt: str | None = None,
+    ) -> PPrinterType: ...
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -61,7 +70,7 @@ def printer_session(request: SubRequest) -> Callable[[str, str | None], None]:
 @pytest.fixture(scope="session")
 def pprinter(request: SubRequest) -> Callable[[str, str | None], None]:
     """Pytest plugin to print test progress steps in verbose mode."""
-    return create_printer(request, " " * 2, "⏩", " ", "")
+    return create_printer(request, head=" ", icon="⏩", space=" ", indentation="  ", timerfmt="[{elapsed:.20f}]")
 
 
 @pytest.fixture(scope="session")
@@ -69,25 +78,38 @@ def pprinter_factory(
     request: SubRequest,
 ) -> PPrinterFactoryType:
     def factory(
-        icon: str | None = None, head: str | None = None, space: str | None = None, first: str | None = None
+        *,
+        icon: str | None = None,
+        head: str | None = None,
+        space: str | None = None,
+        indentation: str | None = None,
+        timerfmt: str | None = None,
     ) -> PPrinterType:
-        return create_printer(request, head, icon, space, first)
+        return create_printer(request, head=head, icon=icon, space=space, indentation=indentation, timerfmt=timerfmt)
 
     return factory
 
 
-def create_printer(
+def create_printer(  # noqa: PLR0913
     request: SubRequest,
+    *,
     head: str | None = None,
     icon: str | None = None,
     space: str | None = None,
-    first: str | None = None,
+    indentation: str | None = None,
+    timerfmt: str | None = None,
 ) -> PPrinterType:
     if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
         terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
         capture_manager = request.config.pluginmanager.getplugin("capturemanager")
         if terminal_reporter is not None:  # pragma: no branch
-            fmt = RecordFormatter(head=head, icon=icon, space=space, first=first)  # type: ignore # noqa: PGH003
+            fmt = RecordFormatter(
+                head=head,  # type: ignore # noqa: PGH003
+                icon=icon,  # type: ignore # noqa: PGH003
+                space=space,  # type: ignore # noqa: PGH003
+                indentation=indentation,  # type: ignore # noqa: PGH003
+                timerfmt=timerfmt,  # type: ignore # noqa: PGH003
+            )
             return State(
                 terminal_reporter,
                 capture_manager,
@@ -101,10 +123,11 @@ def create_printer(
 @dc.dataclass(slots=True)
 class RecordFormatter:
     # this is the complete message line
-    head: str = "\t"
+    head: str = ""
     icon: str = ""
     space: str = ""
-    first: str = ""
+    indentation: str = "\t"
+    timerfmt: str = "{elapsed}\t"
 
     def __post_init__(self) -> None:
         for field in dc.fields(self):
@@ -114,6 +137,30 @@ class RecordFormatter:
     @property
     def pre(self) -> str:
         return f"{self.head}{self.icon}{self.space}"
+
+    def format(self, msg: str, level: int, elapsed: float | None) -> str:
+        """
+        Format a record according to this schema.
+
+        ┌──────┐   ┌──────────┐┌─────────┐┌────────┐
+        │ pre  │ ==│   head   ││  icon   ││ space  │
+        └──────┘   └──────────┘└─────────┘└────────┘
+
+        ┌─────────────┐┌───────┐┌──────┐┌────────────┐
+        │ indentation ││ timer ││ pre  ││ msg        │
+        └─────────────┘└───────┘└──────┘└────────────┘
+                       ┌───────┐┌────────────────────┐┌──────┐┌────────────┐
+                       │ timer ││ spacer             ││ pre  ││ msg        │
+                       └───────┘└────────────────────┘└──────┘└────────────┘
+                       ┌───────┐┌────────────────────┐┌────────────────────┐┌──────┐┌────────────┐
+                       │ timer ││ spacer             ││ spacer             ││ pre  ││ msg        │
+                       └───────┘└────────────────────┘└────────────────────┘└──────┘└────────────┘
+        """
+        indentation = " " * (len(self.indentation)) if level else self.indentation
+        spacer = " " * len(self.pre) * level
+
+        timer = self.timerfmt.format(elapsed=elapsed) if elapsed else ""
+        return f"{indentation}{timer}{spacer}{self.pre}{msg}"
 
 
 @dc.dataclass(slots=True)
@@ -148,10 +195,7 @@ class State:
 
     def __call__(self, msg: str, icon: str | None = None) -> None:
         fmt = self.fmt if icon is None else dc.replace(self.fmt, icon=icon)
-
-        timer = f"{self.elapsed}\t" if self.elapsed else ""
-        indent = (" " * len(fmt.first) if self.level else fmt.first) + " " * self.level * len(fmt.pre)
-        msg = f"{indent}{fmt.pre}{timer}{msg}"
+        msg = fmt.format(msg, self.level, self.elapsed)
         with self._capture_manager.global_and_fixture_disabled():
             self._reporter.write_line(msg)
 
