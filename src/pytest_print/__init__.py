@@ -2,51 +2,21 @@
 
 from __future__ import annotations
 
-import dataclasses as dc
+import sys
+from dataclasses import dataclass, replace
 from timeit import default_timer
-from typing import TYPE_CHECKING, Callable, Protocol
+from typing import TYPE_CHECKING, Optional, Protocol, TypeVar, cast
 
 import pytest
 
-from ._version import __version__
-
 if TYPE_CHECKING:
     from _pytest.capture import CaptureManager
-    from _pytest.config.argparsing import Parser
     from _pytest.fixtures import SubRequest
     from _pytest.terminal import TerminalReporter
 
 
-# define some datatypes for the pprint and pprinter_factory fixtures
-
-
-class PPrinterType(Protocol):
-    def subprinter(self, icon: str | None = None) -> PPrinterType: ...
-
-    def __call__(self, msg: str, icon: str | None = None) -> None: ...
-
-
-class PPrinterFactoryType(Protocol):
-    def __call__(
-        self,
-        *,
-        icon: str | None,
-        head: str | None = None,
-        space: str | None = None,
-        indentation: str | None = None,
-        timerfmt: str | None = None,
-    ) -> PPrinterType: ...
-
-
-def pytest_addoption(parser: Parser) -> None:
+def pytest_addoption(parser: pytest.Parser) -> None:
     group = parser.getgroup("general")
-    group.addoption(
-        "--print-relative-time",
-        action="store_true",
-        dest="pytest_print_relative_time",
-        default=False,
-        help="Time in milliseconds when the print was invoked, relative to the time the fixture was created.",
-    )
     group.addoption(
         "--print",
         action="store_true",
@@ -54,156 +24,174 @@ def pytest_addoption(parser: Parser) -> None:
         default=False,
         help="By default the plugins if verbosity is greater than zero (-v flag), this forces on",
     )
+    group.addoption(
+        "--print-relative-time",
+        action="store_true",
+        dest="pytest_print_relative_time",
+        default=False,
+        help="Time in milliseconds when the print was invoked, relative to the time the fixture was created.",
+    )
+
+
+class Printer(Protocol):
+    """Printer within a pytest session."""
+
+    def __call__(self, msg: str) -> None:
+        """
+        Print the given message.
+
+        :param msg: message to print
+        """
+
+
+@pytest.fixture(scope="session")
+def printer_session(request: SubRequest) -> Printer:
+    """Pytest plugin to print test progress steps in verbose mode (session scoped)."""
+    return _create(request, _Printer, Formatter())
 
 
 @pytest.fixture(name="printer")
-def printer(request: SubRequest) -> Callable[[str, str | None], None]:
+def printer(printer_session: Printer) -> Printer:
     """Pytest plugin to print test progress steps in verbose mode."""
-    return create_printer(request)
+    return printer_session
 
 
-@pytest.fixture(scope="session", name="printer_session")
-def printer_session(request: SubRequest) -> Callable[[str, str | None], None]:
-    return create_printer(request)
+class PrettyPrinter(Protocol):
+    """Printer within a pytest session."""
+
+    def __call__(self, msg: str, *, icon: str | None = None) -> None:
+        """
+        Print the given message in pretty mode.
+
+        :param msg: message to print
+        :param icon: icon to use, will use the one configured at printer creation
+        """
+
+    def indent(self, *, icon: str) -> PrettyPrinter:
+        """
+        Create an indented pretty printer.
+
+        :param icon: change the icon from the parents printer
+        """
 
 
 @pytest.fixture(scope="session")
-def pprinter(request: SubRequest) -> Callable[[str, str | None], None]:
+def pretty_printer(request: SubRequest) -> PrettyPrinter:
     """Pytest plugin to print test progress steps in verbose mode."""
-    return create_printer(request, head=" ", icon="⏩", space=" ", indentation="  ", timerfmt="[{elapsed:.20f}]")
+    formatter = Formatter(head=" ", icon="⏩", space=" ", indentation="  ", timer_fmt="[{elapsed:.20f}]")
+    return _create(request, _PrettyPrinter, formatter)
+
+
+class PrettyPrinterFactory(Protocol):
+    """Create a new pretty printer."""
+
+    def __call__(self, *, formatter: Formatter) -> PrettyPrinter:
+        """
+        Create a new pretty printer.
+
+        :param formatter: the formatter to use with this printer
+        """
 
 
 @pytest.fixture(scope="session")
-def pprinter_factory(
-    request: SubRequest,
-) -> PPrinterFactoryType:
-    def factory(
-        *,
-        icon: str | None = None,
-        head: str | None = None,
-        space: str | None = None,
-        indentation: str | None = None,
-        timerfmt: str | None = None,
-    ) -> PPrinterType:
-        return create_printer(request, head=head, icon=icon, space=space, indentation=indentation, timerfmt=timerfmt)
+def create_pretty_printer(request: SubRequest) -> PrettyPrinterFactory:
+    """Pytest plugin to print test progress steps in verbose mode."""
+    Formatter(head=" ", icon="⏩", space=" ", indentation="  ", timer_fmt="[{elapsed:.20f}]")
 
-    return factory
+    def meth(*, formatter: Formatter) -> PrettyPrinter:
+        return _create(request, _PrettyPrinter, formatter)
+
+    return meth
 
 
-def create_printer(  # noqa: PLR0913
-    request: SubRequest,
-    *,
-    head: str | None = None,
-    icon: str | None = None,
-    space: str | None = None,
-    indentation: str | None = None,
-    timerfmt: str | None = None,
-) -> PPrinterType:
-    if request.config.getoption("pytest_print_on") or request.config.getoption("verbose") > 0:
-        terminal_reporter = request.config.pluginmanager.getplugin("terminalreporter")
-        capture_manager = request.config.pluginmanager.getplugin("capturemanager")
-        if terminal_reporter is not None:  # pragma: no branch
-            fmt = RecordFormatter(
-                head=head,  # type: ignore # noqa: PGH003
-                icon=icon,  # type: ignore # noqa: PGH003
-                space=space,  # type: ignore # noqa: PGH003
-                indentation=indentation,  # type: ignore # noqa: PGH003
-                timerfmt=timerfmt,  # type: ignore # noqa: PGH003
-            )
-            return State(
-                terminal_reporter,
-                capture_manager,
-                fmt,
-                _start=default_timer() if request.config.getoption("pytest_print_relative_time") else None,
-            )
+@dataclass(frozen=True, **{"slots": True, "kw_only": True} if sys.version_info >= (3, 10) else {})
+class Formatter:
+    """Configures how to format messages to be printed."""
 
-    return NoOpState()
-
-
-@dc.dataclass
-class RecordFormatter:
-    # this is the complete message line
-    head: str = ""
-    icon: str = ""
-    space: str = ""
-    indentation: str = "\t"
-    timerfmt: str = "{elapsed}\t"
-
-    def __post_init__(self) -> None:
-        for field in dc.fields(self):
-            if getattr(self, field.name) is None:
-                setattr(self, field.name, field.default)
+    head: str = ""  #: start every line with this prefix
+    icon: str = ""  #: an icon text printed immediately after the head
+    space: str = ""  #: character to print right after the prefix
+    indentation: str = "\t"  #: use this character to indent the message, only useful for indented printers
+    timer_fmt: str = "{elapsed}\t"  #: how to print out elapsed time since the creation of the printer - float (seconds)
 
     @property
-    def pre(self) -> str:
+    def _pre(self) -> str:
         return f"{self.head}{self.icon}{self.space}"
 
-    def format(self, msg: str, level: int, elapsed: float | None) -> str:
+    def __call__(self, msg: str, level: int, elapsed: float | None) -> str:
         """
-        Format a record according to this schema.
+        Format the given message.
 
-        ┌──────┐   ┌──────────┐┌─────────┐┌────────┐
-        │ pre  │ ==│   head   ││  icon   ││ space  │
-        └──────┘   └──────────┘└─────────┘└────────┘
-
-        ┌─────────────┐┌───────┐┌──────┐┌────────────┐
-        │ indentation ││ timer ││ pre  ││ msg        │
-        └─────────────┘└───────┘└──────┘└────────────┘
-                       ┌───────┐┌────────────────────┐┌──────┐┌────────────┐
-                       │ timer ││ spacer             ││ pre  ││ msg        │
-                       └───────┘└────────────────────┘└──────┘└────────────┘
-                       ┌───────┐┌────────────────────┐┌────────────────────┐┌──────┐┌────────────┐
-                       │ timer ││ spacer             ││ spacer             ││ pre  ││ msg        │
-                       └───────┘└────────────────────┘└────────────────────┘└──────┘└────────────┘
+        :param msg: the message to format
+        :param level: indentation level
+        :param elapsed: time elapsed
+        :return: the formatted message
         """
         indentation = " " * (len(self.indentation)) if level else self.indentation
-        spacer = " " * len(self.pre) * level
-
-        timer = self.timerfmt.format(elapsed=elapsed) if elapsed else ""
-        return f"{indentation}{timer}{spacer}{self.pre}{msg}"
-
-
-@dc.dataclass
-class NoOpState:
-    parent: NoOpState | None = None
-
-    def __call__(self, msg: str, icon: str | None = None) -> None:
-        """Do nothing."""
-
-    @staticmethod
-    def subprinter(_icon: str | None = None) -> NoOpState:
-        return NoOpState()
+        spacer = " " * len(self._pre) * level
+        timer = self.timer_fmt.format(elapsed=elapsed) if elapsed else ""
+        return f"{indentation}{timer}{spacer}{self._pre}{msg}"
 
 
-@dc.dataclass
-class State:
-    _reporter: TerminalReporter
-    _capture_manager: CaptureManager
+class _Printer:
+    def __init__(
+        self,
+        *,
+        reporter: TerminalReporter | None,
+        capture_manager: CaptureManager | None,
+        formatter: Formatter,
+        level: int,
+        start: float | None,
+    ) -> None:
+        self._reporter = reporter
+        self._capture_manager = capture_manager
+        self._formatter = formatter
+        self._level = level
+        self._start = start
 
-    fmt: RecordFormatter
-    level: int = 0
+    def __call__(self, msg: str) -> None:
+        self._print(msg, self._formatter)
 
-    # this will be set depending on print_relative
-    _start: float | None = None
-    parent: NoOpState | State | None = None
-
-    @property
-    def elapsed(self) -> float | None:
-        if self._start is None:
-            return None  # pragma: no cover
-        return default_timer() - self._start
-
-    def __call__(self, msg: str, icon: str | None = None) -> None:
-        fmt = self.fmt if icon is None else dc.replace(self.fmt, icon=icon)
-        msg = fmt.format(msg, self.level, self.elapsed)
+    def _print(self, msg: str, formatter: Formatter) -> None:
+        if self._reporter is None or self._capture_manager is None:  # disabled
+            return
+        msg = formatter(msg, self._level, None if self._start is None else default_timer() - self._start)
         with self._capture_manager.global_and_fixture_disabled():
             self._reporter.write_line(msg)
 
-    def subprinter(self, icon: str | None = None) -> State:
-        fmt = dc.replace(self.fmt, icon=icon)  # type: ignore # noqa: PGH003
-        return self.__class__(self._reporter, self._capture_manager, fmt, self.level + 1, self._start, self)
+
+class _PrettyPrinter(_Printer):
+    def __call__(self, msg: str, *, icon: str | None = None) -> None:
+        self._print(msg, self._formatter if icon is None else replace(self._formatter, icon=icon))
+
+    def indent(self, *, icon: str) -> PrettyPrinter:
+        return _PrettyPrinter(
+            reporter=self._reporter,
+            capture_manager=self._capture_manager,
+            formatter=replace(self._formatter, icon=icon),
+            level=self._level + 1,
+            start=self._start,
+        )
+
+
+_OfType = TypeVar("_OfType", bound=_Printer)
+
+
+def _create(request: SubRequest, of_type: type[_OfType], formatter: Formatter) -> _OfType:
+    return of_type(
+        reporter=cast("Optional[TerminalReporter]", request.config.pluginmanager.getplugin("terminalreporter"))
+        if request.config.getoption("pytest_print_on") or cast("int", request.config.getoption("verbose")) > 0
+        else None,
+        capture_manager=cast("Optional[CaptureManager]", request.config.pluginmanager.getplugin("capturemanager")),
+        formatter=formatter,
+        start=default_timer() if request.config.getoption("pytest_print_relative_time") else None,
+        level=0,
+    )
 
 
 __all__ = [
-    "__version__",
+    "Formatter",
+    "PrettyPrinter",
+    "PrettyPrinterFactory",
+    "Printer",
 ]

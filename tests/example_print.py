@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from time import sleep
-from typing import Callable, Iterator
+from typing import TYPE_CHECKING, Iterator
 
 import pytest
+
+if TYPE_CHECKING:
+    from pytest_print import Printer
 
 
 def create_virtual_environment() -> None:
@@ -19,19 +22,19 @@ def parallel_requests() -> None:
 
 
 @pytest.fixture(scope="session")
-def _expensive_setup(printer_session: Callable[[str], None]) -> Iterator[None]:
+def _expensive_setup(printer_session: Printer) -> Iterator[None]:
     printer_session("attempt global peace")
     yield
     printer_session("teardown global peace")
 
 
 @pytest.mark.usefixtures("_expensive_setup")
-def test_global_peace(printer_session: Callable[[str], None]) -> None:
+def test_global_peace(printer_session: Printer) -> None:
     printer_session("here we have global peace")
 
 
 @pytest.mark.usefixtures("_expensive_setup")
-def test_server_parallel_requests(printer: Callable[[str], None]) -> None:
+def test_server_parallel_requests(printer: Printer) -> None:
     printer("create virtual environment")
     create_virtual_environment()
 
