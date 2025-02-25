@@ -51,7 +51,6 @@ urls.Tracker = "https://github.com/pytest-dev/pytest-print/issues"
 entry-points.pytest11.print = "pytest_print"
 
 [tool.hatch]
-build.hooks.vcs.version-file = "src/pytest_print/_version.py"
 version.source = "vcs"
 
 [tool.ruff]
@@ -64,7 +63,6 @@ lint.select = [
   "ALL",
 ]
 lint.ignore = [
-  "ANN101", # no type annotation for self
   "ANN401", # allow Any as type annotation
   "COM812", # Conflict with formatter
   "CPY",    # No copyright statements
@@ -106,9 +104,9 @@ run.dynamic_context = "test_function"
 run.branch = true
 run.parallel = true
 report.omit = [
-  "tests/example.py",
+  "tests/example_*.py",
 ]
-report.fail_under = 78
+report.fail_under = 100
 report.show_missing = true
 html.show_contexts = true
 html.skip_covered = false
