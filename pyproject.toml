@@ -1,8 +1,8 @@
 [build-system]
 build-backend = "hatchling.build"
 requires = [
-  "hatch-vcs>=0.4",
-  "hatchling>=1.25",
+  "hatch-vcs>=0.5",
+  "hatchling>=1.27",
 ]
 
 [project]
@@ -17,7 +17,7 @@ license.file = "LICENSE"
 maintainers = [
   { name = "Bernát Gábor", email = "gaborjbernat@gmail.com" },
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
@@ -25,8 +25,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -38,12 +36,12 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "pytest>=8.3.2",
+  "pytest>=8.4.2",
 ]
 optional-dependencies.test = [
   "covdefaults>=2.3",
-  "coverage>=7.6.1",
-  "pytest-mock>=3.14",
+  "coverage>=7.10.7",
+  "pytest-mock>=3.15.1",
 ]
 urls.Homepage = "https://github.com/pytest-dev/pytest-print"
 urls.Source = "https://github.com/pytest-dev/pytest-print"
@@ -54,7 +52,6 @@ entry-points.pytest11.print = "pytest_print"
 version.source = "vcs"
 
 [tool.ruff]
-target-version = "py38"
 line-length = 120
 format.preview = true
 format.docstring-code-line-length = 100
