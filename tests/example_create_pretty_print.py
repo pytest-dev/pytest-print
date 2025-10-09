@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 from time import sleep
-from typing import TYPE_CHECKING, Iterator
+from typing import TYPE_CHECKING
 
 import pytest
 
 from pytest_print import Formatter
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from pytest_print import PrettyPrinter, PrettyPrinterFactory
 
 

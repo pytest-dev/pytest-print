@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass, replace
 from timeit import default_timer
-from typing import TYPE_CHECKING, Optional, Protocol, TypeVar, cast
+from typing import TYPE_CHECKING, Protocol, TypeVar, cast
 
 import pytest
 
@@ -179,10 +179,10 @@ _OfType = TypeVar("_OfType", bound=_Printer)
 
 def _create(request: SubRequest, of_type: type[_OfType], formatter: Formatter) -> _OfType:
     return of_type(
-        reporter=cast("Optional[TerminalReporter]", request.config.pluginmanager.getplugin("terminalreporter"))
+        reporter=cast("TerminalReporter | None", request.config.pluginmanager.getplugin("terminalreporter"))
         if request.config.getoption("pytest_print_on") or cast("int", request.config.getoption("verbose")) > 0
         else None,
-        capture_manager=cast("Optional[CaptureManager]", request.config.pluginmanager.getplugin("capturemanager")),
+        capture_manager=cast("CaptureManager | None", request.config.pluginmanager.getplugin("capturemanager")),
         formatter=formatter,
         start=default_timer() if request.config.getoption("pytest_print_relative_time") else None,
         level=0,
