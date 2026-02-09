@@ -7,7 +7,10 @@ requires = [
 
 [project]
 name = "pytest-print"
-description = "pytest-print adds the printer fixture you can use to print messages to the user (directly to the pytest runner, not stdout)"
+description = """\
+  pytest-print adds the printer fixture you can use to print messages to the user (directly to the pytest runner, not \
+  stdout)\
+  """
 readme = "README.md"
 keywords = [
   "env",
@@ -93,20 +96,16 @@ count = true
 max_supported_python = "3.13"
 
 [tool.coverage]
+run.branch = true
+run.dynamic_context = "test_function"
+run.parallel = true
+run.plugins = [
+  "covdefaults",
+]
 run.source = [
   "pytest_print",
   "tests",
 ]
-run.dynamic_context = "test_function"
-run.branch = true
-run.parallel = true
-report.omit = [
-  "tests/example_*.py",
-]
-report.fail_under = 100
-report.show_missing = true
-html.show_contexts = true
-html.skip_covered = false
 paths.source = [
   "src",
   ".tox*/*/lib/python*/site-packages",
@@ -115,9 +114,13 @@ paths.source = [
   "*/src",
   "*\\src",
 ]
-run.plugins = [
-  "covdefaults",
+report.fail_under = 100
+report.omit = [
+  "tests/example_*.py",
 ]
+report.show_missing = true
+html.show_contexts = true
+html.skip_covered = false
 
 [tool.mypy]
 python_version = "3.13"
