@@ -10,7 +10,6 @@ import pytest
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureManager
-    from _pytest.terminal import TerminalReporter
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -134,7 +133,7 @@ class _Printer:
     def __init__(
         self,
         *,
-        reporter: TerminalReporter | None,
+        reporter: pytest.TerminalReporter | None,
         capture_manager: CaptureManager | None,
         formatter: Formatter,
         level: int,
@@ -176,7 +175,7 @@ _OfType = TypeVar("_OfType", bound=_Printer)
 
 def _create(request: pytest.FixtureRequest, of_type: type[_OfType], formatter: Formatter) -> _OfType:
     return of_type(
-        reporter=cast("TerminalReporter | None", request.config.pluginmanager.getplugin("terminalreporter"))
+        reporter=cast("pytest.TerminalReporter | None", request.config.pluginmanager.getplugin("terminalreporter"))
         if request.config.getoption("pytest_print_on") or cast("int", request.config.getoption("verbose")) > 0
         else None,
         capture_manager=cast("CaptureManager | None", request.config.pluginmanager.getplugin("capturemanager")),
