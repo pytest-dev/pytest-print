@@ -8,8 +8,8 @@ from tests import extract_printer_text, seed_test
 
 
 @pytest.fixture
-def example(testdir: pytest.Testdir) -> pytest.Testdir:
-    return seed_test("example_create_pretty_print.py", testdir)
+def example(pytester: pytest.Pytester) -> pytest.Pytester:
+    return seed_test("example_create_pretty_print.py", pytester)
 
 
 def fix_floats_in_relative_time(txt: str) -> str:
@@ -17,14 +17,14 @@ def fix_floats_in_relative_time(txt: str) -> str:
     return re.sub(float_pattern, "0.1", txt)
 
 
-def test_progress_no_v(example: pytest.Testdir) -> None:
+def test_progress_no_v(example: pytest.Pytester) -> None:
     result = example.runpytest()
     result.assert_outcomes(passed=3)
     assert "	start server from virtual env" not in result.outlines
     assert "global peace" not in result.outlines
 
 
-def test_progress_v_no_relative(example: pytest.Testdir) -> None:
+def test_progress_v_no_relative(example: pytest.Pytester) -> None:
     result_verbose = example.runpytest("-v", "--print")
     result_verbose.assert_outcomes(passed=3)
 
@@ -57,7 +57,7 @@ test_a.py::test_create_pretty_printer_usage PASSED
     assert output == expected
 
 
-def test_progress_v_relative(example: pytest.Testdir) -> None:
+def test_progress_v_relative(example: pytest.Pytester) -> None:
     result_verbose_relative = example.runpytest(
         "--print",
         "-v",
@@ -83,7 +83,7 @@ test_a.py::test_server_parallel_requests PASSED
     assert output == expected
 
 
-def test_progress_no_v_but_with_print_request(example: pytest.Testdir) -> None:
+def test_progress_no_v_but_with_print_request(example: pytest.Pytester) -> None:
     result = example.runpytest("--print")
     result.assert_outcomes(passed=3)
     assert "      🚀 start server from virtual env" in result.outlines
