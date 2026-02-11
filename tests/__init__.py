@@ -17,12 +17,11 @@ def extract_printer_text(lines: list[str]) -> str:
     return re.sub(r"[ \t]+\n", "\n", output)
 
 
-def seed_test(filename: str, testdir: pytest.Testdir) -> pytest.Testdir:
+def seed_test(filename: str, pytester: pytest.Pytester) -> pytest.Pytester:
     src = Path(__file__).parent / filename
     assert src.exists()
-    dest = Path(str(testdir.tmpdir)) / "test_a.py"
-    copy2(src, dest)
-    return testdir
+    copy2(src, pytester.path / "test_a.py")
+    return pytester
 
 
 __all__ = [

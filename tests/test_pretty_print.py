@@ -8,8 +8,8 @@ from tests import extract_printer_text, seed_test
 
 
 @pytest.fixture
-def example(testdir: pytest.Testdir) -> pytest.Testdir:
-    return seed_test("example_pretty_print.py", testdir)
+def example(pytester: pytest.Pytester) -> pytest.Pytester:
+    return seed_test("example_pretty_print.py", pytester)
 
 
 def fix_floats_in_relative_time(txt: str) -> str:
@@ -17,7 +17,7 @@ def fix_floats_in_relative_time(txt: str) -> str:
     return re.sub(float_pattern, "0.1", txt)
 
 
-def test_progress_v_no_relative(example: pytest.Testdir) -> None:
+def test_progress_v_no_relative(example: pytest.Pytester) -> None:
     result = example.runpytest("-v", "--print")
     result.assert_outcomes(passed=1)
 
@@ -37,7 +37,7 @@ test_a.py::test_pprinter_usage PASSED
     assert output == expected
 
 
-def test_progress_v_relative(example: pytest.Testdir) -> None:
+def test_progress_v_relative(example: pytest.Pytester) -> None:
     result = example.runpytest(
         "--print",
         "-v",

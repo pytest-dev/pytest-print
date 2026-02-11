@@ -6,18 +6,18 @@ from tests import extract_printer_text, seed_test
 
 
 @pytest.fixture
-def example(testdir: pytest.Testdir) -> pytest.Testdir:
-    return seed_test("example_print.py", testdir)
+def example(pytester: pytest.Pytester) -> pytest.Pytester:
+    return seed_test("example_print.py", pytester)
 
 
-def test_progress_no_v(example: pytest.Testdir) -> None:
+def test_progress_no_v(example: pytest.Pytester) -> None:
     result = example.runpytest()
     result.assert_outcomes(passed=2)
     assert "	start server from virtual env" not in result.outlines
     assert "global peace" not in result.outlines
 
 
-def test_progress_v_no_relative(example: pytest.Testdir, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_progress_v_no_relative(example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("_pytest._io.terminalwriter.get_terminal_width", lambda: 80)
     monkeypatch.setenv("COLUMNS", str(80))
     result_verbose = example.runpytest("-v", "--print")
@@ -40,7 +40,7 @@ test_a.py::test_server_parallel_requests PASSED
     assert found == expected
 
 
-def test_progress_v_relative(example: pytest.Testdir) -> None:
+def test_progress_v_relative(example: pytest.Pytester) -> None:
     result_verbose_relative = example.runpytest(
         "--print",
         "-v",
@@ -69,7 +69,7 @@ def test_progress_v_relative(example: pytest.Testdir) -> None:
     ], session
 
 
-def test_progress_no_v_but_with_print_request(example: pytest.Testdir) -> None:
+def test_progress_no_v_but_with_print_request(example: pytest.Pytester) -> None:
     result = example.runpytest("--print")
     result.assert_outcomes(passed=2)
     assert "	start server from virtual env" in result.outlines

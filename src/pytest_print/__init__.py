@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import sys
 from dataclasses import dataclass, replace
 from timeit import default_timer
 from typing import TYPE_CHECKING, Protocol, TypeVar, cast
@@ -11,7 +10,6 @@ import pytest
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureManager
-    from _pytest.fixtures import SubRequest
     from _pytest.terminal import TerminalReporter
 
 
@@ -45,7 +43,7 @@ class Printer(Protocol):
 
 
 @pytest.fixture(scope="session")
-def printer_session(request: SubRequest) -> Printer:
+def printer_session(request: pytest.FixtureRequest) -> Printer:
     """Pytest plugin to print test progress steps in verbose mode (session scoped)."""
     return _create(request, _Printer, Formatter())
 
@@ -76,7 +74,7 @@ class PrettyPrinter(Protocol):
 
 
 @pytest.fixture(scope="session")
-def pretty_printer(request: SubRequest) -> PrettyPrinter:
+def pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinter:
     """Pytest plugin to print test progress steps in verbose mode."""
     formatter = Formatter(head=" ", icon="⏩", space=" ", indentation="  ", timer_fmt="[{elapsed:.20f}]")
     return _create(request, _PrettyPrinter, formatter)
@@ -94,9 +92,8 @@ class PrettyPrinterFactory(Protocol):
 
 
 @pytest.fixture(scope="session")
-def create_pretty_printer(request: SubRequest) -> PrettyPrinterFactory:
+def create_pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinterFactory:
     """Pytest plugin to print test progress steps in verbose mode."""
-    Formatter(head=" ", icon="⏩", space=" ", indentation="  ", timer_fmt="[{elapsed:.20f}]")
 
     def meth(*, formatter: Formatter) -> PrettyPrinter:
         return _create(request, _PrettyPrinter, formatter)
@@ -104,7 +101,7 @@ def create_pretty_printer(request: SubRequest) -> PrettyPrinterFactory:
     return meth
 
 
-@dataclass(frozen=True, **{"slots": True, "kw_only": True} if sys.version_info >= (3, 10) else {})
+@dataclass(frozen=True, slots=True, kw_only=True)
 class Formatter:
     """Configures how to format messages to be printed."""
 
@@ -177,7 +174,7 @@ class _PrettyPrinter(_Printer):
 _OfType = TypeVar("_OfType", bound=_Printer)
 
 
-def _create(request: SubRequest, of_type: type[_OfType], formatter: Formatter) -> _OfType:
+def _create(request: pytest.FixtureRequest, of_type: type[_OfType], formatter: Formatter) -> _OfType:
     return of_type(
         reporter=cast("TerminalReporter | None", request.config.pluginmanager.getplugin("terminalreporter"))
         if request.config.getoption("pytest_print_on") or cast("int", request.config.getoption("verbose")) > 0

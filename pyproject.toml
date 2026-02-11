@@ -2,12 +2,15 @@
 build-backend = "hatchling.build"
 requires = [
   "hatch-vcs>=0.5",
-  "hatchling>=1.27",
+  "hatchling>=1.28",
 ]
 
 [project]
 name = "pytest-print"
-description = "pytest-print adds the printer fixture you can use to print messages to the user (directly to the pytest runner, not stdout)"
+description = """\
+  pytest-print adds the printer fixture you can use to print messages to the user (directly to the pytest runner, not \
+  stdout)\
+  """
 readme = "README.md"
 keywords = [
   "env",
@@ -36,11 +39,11 @@ dynamic = [
   "version",
 ]
 dependencies = [
-  "pytest>=8.4.2",
+  "pytest>=9.0.2",
 ]
 optional-dependencies.test = [
   "covdefaults>=2.3",
-  "coverage>=7.10.7",
+  "coverage>=7.13.4",
   "pytest-mock>=3.15.1",
 ]
 urls.Homepage = "https://github.com/pytest-dev/pytest-print"
@@ -67,6 +70,7 @@ lint.ignore = [
   "D212",   # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
   "DOC",    # no support
   "ISC001", # Conflict with formatter
+  "RUF067", # code in __init__ modules is intentional
   "S104",   # Possible binding to all interface
 ]
 lint.per-file-ignores."tests/**/*.py" = [
@@ -93,20 +97,16 @@ count = true
 max_supported_python = "3.13"
 
 [tool.coverage]
+run.branch = true
+run.dynamic_context = "test_function"
+run.parallel = true
+run.plugins = [
+  "covdefaults",
+]
 run.source = [
   "pytest_print",
   "tests",
 ]
-run.dynamic_context = "test_function"
-run.branch = true
-run.parallel = true
-report.omit = [
-  "tests/example_*.py",
-]
-report.fail_under = 100
-report.show_missing = true
-html.show_contexts = true
-html.skip_covered = false
 paths.source = [
   "src",
   ".tox*/*/lib/python*/site-packages",
@@ -115,11 +115,13 @@ paths.source = [
   "*/src",
   "*\\src",
 ]
-run.plugins = [
-  "covdefaults",
+report.fail_under = 100
+report.omit = [
+  "tests/example_*.py",
 ]
+report.show_missing = true
+html.show_contexts = true
+html.skip_covered = false
 
-[tool.mypy]
-python_version = "3.13"
-show_error_codes = true
-strict = true
+[tool.ty]
+environment.python-version = "3.14"
