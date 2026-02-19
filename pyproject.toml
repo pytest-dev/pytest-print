@@ -42,15 +42,35 @@ dynamic = [
 dependencies = [
   "pytest>=9.0.2",
 ]
-optional-dependencies.test = [
-  "covdefaults>=2.3",
-  "coverage>=7.13.4",
-  "pytest-mock>=3.15.1",
-]
 urls.Homepage = "https://github.com/pytest-dev/pytest-print"
 urls.Source = "https://github.com/pytest-dev/pytest-print"
 urls.Tracker = "https://github.com/pytest-dev/pytest-print/issues"
 entry-points.pytest11.print = "pytest_print"
+
+[dependency-groups]
+dev = [
+  { include-group = "lint" },
+  { include-group = "pkg-meta" },
+  { include-group = "test" },
+  { include-group = "type" },
+]
+test = [
+  "covdefaults>=2.3",
+  "coverage>=7.13.4",
+  "pytest-mock>=3.15.1",
+]
+type = [
+  "ty>=0.0.17",
+  { include-group = "test" },
+]
+lint = [
+  "pre-commit-uv>=4.2",
+]
+pkg-meta = [
+  "check-wheel-contents>=0.6.3",
+  "twine>=6.2",
+  "uv>=0.10.2",
+]
 
 [tool.hatch]
 version.source = "vcs"

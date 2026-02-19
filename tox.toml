@@ -6,7 +6,7 @@ skip_missing_interpreters = true
 description = "run the tests with pytest"
 package = "wheel"
 wheel_build_env = ".pkg"
-extras = [ "test" ]
+dependency_groups = [ "test" ]
 set_env.COVERAGE_FILE = "{env:COVERAGE_FILE:{work_dir}{/}.coverage.{env_name}}"
 commands = [
   [ "coverage", "erase" ],
@@ -28,19 +28,19 @@ commands = [
 [env.fix]
 description = "run static analysis and style check using flake8"
 skip_install = true
-deps = [ "pre-commit-uv>=4.2" ]
+dependency_groups = [ "lint" ]
 pass_env = [ "HOMEPATH", "PROGRAMDATA" ]
 commands = [ [ "pre-commit", "run", "--all-files", "--show-diff-on-failure" ] ]
 
 [env.type]
 description = "run type check on code base"
-deps = [ "ty==0.0.16" ]
+dependency_groups = [ "type" ]
 commands = [ [ "ty", "check", "--output-format", "concise", "--error-on-warning", "." ] ]
 
 [env.pkg_meta]
 description = "check that the long description is valid"
 skip_install = true
-deps = [ "check-wheel-contents>=0.6.3", "twine>=6.2", "uv>=0.10.2" ]
+dependency_groups = [ "pkg-meta" ]
 commands = [
   [ "uv", "build", "--sdist", "--wheel", "--out-dir", "{env_tmp_dir}", "." ],
   [ "twine", "check", "{env_tmp_dir}{/}*" ],
@@ -50,7 +50,7 @@ commands = [
 [env.dev]
 description = "generate a DEV environment"
 package = "editable"
-extras = [ "test" ]
+dependency_groups = [ "dev" ]
 commands = [
   [ "uv", "pip", "tree" ],
   [ "python", "-c", "import sys; print(sys.executable)" ],
