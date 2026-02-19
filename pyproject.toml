@@ -59,9 +59,18 @@ test = [
   "coverage>=7.13.4",
   "pytest-mock>=3.15.1",
 ]
-type = [ "ty>=0.0.17", { include-group = "test" }, ]
-lint = [ "pre-commit-uv>=4.2", ]
-pkg-meta = [ "check-wheel-contents>=0.6.3", "twine>=6.2", "uv>=0.10.2", ]
+type = [
+  "ty>=0.0.17",
+  { include-group = "test" },
+]
+lint = [
+  "pre-commit-uv>=4.2",
+]
+pkg-meta = [
+  "check-wheel-contents>=0.6.3",
+  "twine>=6.2",
+  "uv>=0.10.2",
+]
 
 [tool.hatch]
 version.source = "vcs"
