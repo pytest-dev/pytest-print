@@ -43,12 +43,15 @@ This library provides the following fixtures that help you print messages within
 output capture, so it will show up in the standard output, even if the test passes):
 
 - `printer: Printter` - function level fixture, when called prints a message line (with very simple formatting),
+
 - [`printer_session: Printter`](#example-printer_session) - session scoped fixture same as above but using (this exists
   as a backwards compatibility layer, as we didn't want to switch the originally function scope variant to session one),
+
 - [`pretty_printer: PrettyPrintter`](#example-pretty_printer) - session scoped fixture, when called prints a message
   line (with fancy formatting of space for indentation, `⏩` icon for every message, and elapsed time format in form of
   `[{elapsed:.20f}]`) and also allows creating a printer that will be indented one level deeper (and optionally use a
   different icon).
+
 - [`create_pretty_printer: PrettyPrinterFactory`](#example-create_pretty_printer) - allows the caller to customize the
   fancy formatter as they wish. Takes one `formatter` argument, whose arguments should be interpreted as:
 
@@ -168,12 +171,12 @@ if TYPE_CHECKING:
 @pytest.fixture(scope="session")
 def pretty(create_pretty_printer: PrettyPrinterFactory) -> PrettyPrinter:
     formatter = Formatter(
-      indentation=" I ",
-      head=" H ",
-      space=" S ",
-      icon="🧹",
-      timer_fmt="[{elapsed:.5f}]",
-     )
+        indentation=" I ",
+        head=" H ",
+        space=" S ",
+        icon="🧹",
+        timer_fmt="[{elapsed:.5f}]",
+    )
     return create_pretty_printer(formatter=formatter)
 
 
