@@ -1,9 +1,10 @@
 requires = [ "tox>=4.64.7" ]
-env_list = [ "3.15", "3.14", "3.13", "3.12", "3.11", "3.10", "3.15t", "fix", "pkg_meta", "type" ]
+env_list = [ "3.15", "3.14", "3.13", "3.12", "3.11", "3.15t", "fix", "pkg_meta", "type" ]
 skip_missing_interpreters = true
 
 [env_run_base]
 description = "run the tests with pytest"
+default_base_python = [ "3.15" ]
 package = "wheel"
 wheel_build_env = ".pkg"
 dependency_groups = [ "test" ]
@@ -24,6 +25,9 @@ commands = [
   [ "coverage", "report" ],
   [ "coverage", "html", "-d", "{env_tmp_dir}{/}htmlcov" ],
 ]
+
+[env_pkg_base]
+default_base_python = [ "3.15" ]
 
 [env.fix]
 description = "run static analysis and style check using flake8"

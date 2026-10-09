@@ -20,7 +20,7 @@ license.file = "LICENSE"
 maintainers = [
   { name = "Bernát Gábor", email = "gaborjbernat@gmail.com" },
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
@@ -28,7 +28,6 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
@@ -85,23 +84,23 @@ lint.select = [
   "ALL",
 ]
 lint.ignore = [
-  "ANN401", # allow Any as type annotation
-  "COM812", # Conflict with formatter
-  "CPY",    # No copyright statements
-  "D203",   # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
-  "D212",   # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
-  "DOC",    # no support
-  "ISC001", # Conflict with formatter
-  "RUF067", # code in __init__ modules is intentional
-  "S104",   # Possible binding to all interface
+  "any-type",                                  # allow Any as type annotation
+  "CPY",                                       # No copyright statements
+  "DOC",                                       # no support
+  "hardcoded-bind-all-interfaces",             # Possible binding to all interface
+  "incorrect-blank-line-before-class",         # `one-blank-line-before-class` (D203) and `no-blank-line-before-class` (D211) are incompatible
+  "missing-trailing-comma",                    # Conflict with formatter
+  "multi-line-summary-first-line",             # `multi-line-summary-first-line` (D212) and `multi-line-summary-second-line` (D213) are incompatible
+  "non-empty-init-module",                     # code in __init__ modules is intentional
+  "single-line-implicit-string-concatenation", # Conflict with formatter
 ]
 lint.per-file-ignores."tests/**/*.py" = [
-  "D",       # don't care about documentation in tests
-  "FBT",     # don't care about booleans as positional arguments in tests
-  "INP001",  # no implicit namespace
-  "PLR2004", # Magic value used in comparison, consider replacing with a constant variable
-  "S101",    # asserts allowed in tests
-  "S603",    # `subprocess` call: check for execution of untrusted input
+  "assert",                               # asserts allowed in tests
+  "D",                                    # don't care about documentation in tests
+  "FBT",                                  # don't care about booleans as positional arguments in tests
+  "implicit-namespace-package",           # no implicit namespace
+  "magic-value-comparison",               # Magic value used in comparison, consider replacing with a constant variable
+  "subprocess-without-shell-equals-true", # `subprocess` call: check for execution of untrusted input
 ]
 lint.isort = { known-first-party = [
   "pytest_print",
@@ -119,7 +118,7 @@ count = true
 max_supported_python = "3.15"
 
 [tool.ty]
-environment.python-version = "3.14"
+environment.python-version = "3.15"
 
 [tool.coverage]
 run.source = [
