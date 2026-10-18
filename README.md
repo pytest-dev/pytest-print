@@ -11,6 +11,8 @@ Allows to print extra content onto the PyTest reporting. This can be used for ex
 running tests, or to print debug information in your tests when you cannot debug the code (so that the end user does not
 need to wonder if the test froze/dead locked or not).
 
+[Changelog](CHANGELOG.md).
+
 <!--ts-->
 
 - [Install](#install)

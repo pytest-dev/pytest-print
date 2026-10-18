@@ -42,6 +42,7 @@ dynamic = [
 dependencies = [
   "pytest>=9.1.1",
 ]
+urls.Changelog = "https://github.com/pytest-dev/pytest-print/blob/main/CHANGELOG.md"
 urls.Homepage = "https://github.com/pytest-dev/pytest-print"
 urls.Source = "https://github.com/pytest-dev/pytest-print"
 urls.Tracker = "https://github.com/pytest-dev/pytest-print/issues"
