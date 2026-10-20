@@ -5,3 +5,4 @@ coverage.xml
 __pycache__
 **.pyc
 src/pytest_print/_version.py
+/uv.lock
