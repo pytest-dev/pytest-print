@@ -8,15 +8,18 @@ requires = [
 
 [project]
 name = "pytest-print"
+import-names = [ "pytest_print" ]
 description = """\
   pytest-print adds the printer fixture you can use to print messages to the user (directly to the pytest runner, not \
   stdout)\
   """
 keywords = [
-  "env",
+  "print",
   "pytest",
+  "reporting",
 ]
-license.file = "LICENSE"
+license = "MIT"
+license-files = [ "LICENSE" ]
 maintainers = [
   { name = "Bernát Gábor", email = "gaborjbernat@gmail.com" },
 ]
@@ -24,7 +27,6 @@ requires-python = ">=3.11"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3 :: Only",
