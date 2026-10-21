@@ -26,6 +26,8 @@ maintainers = [
 requires-python = ">=3.11"
 classifiers = [
   "Development Status :: 5 - Production/Stable",
+  "Environment :: Plugins",
+  "Framework :: Pytest",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
@@ -37,6 +39,7 @@ classifiers = [
   "Programming Language :: Python :: 3.15",
   "Programming Language :: Python :: Implementation :: CPython",
   "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Software Development :: Testing",
 ]
 dynamic = [
   "readme",
@@ -75,6 +78,13 @@ pkg-meta = [
   "twine>=7",
   "uv>=0.12.22",
 ]
+release = [
+  "mdformat-gfm>=1",
+  "mdformat-ruff>=0.1.3",
+  "prek>=0.5",
+  "release-creator @ git+https://github.com/tox-dev/release-creator@5ab33234939cf2969d25a11ba477c31eb264067c",
+  "towncrier>=26.9",
+]
 
 [tool.hatch]
 version.source = "vcs"
@@ -83,10 +93,13 @@ metadata.hooks.fancy-pypi-readme.fragments = [ { path = "README.md" } ]
 metadata.hooks.fancy-pypi-readme.substitutions = [
   { pattern = '''(?x)
     (?<!!)\[(?P<label>[^\]]+)\]\( # Link text, excluding images
-    (?P<path>CHANGELOG\.md) # Repository files linked from the README
+    (?P<path>CHANGELOG\.md|CONTRIBUTING\.md) # Repository files linked from the README
     \)
     ''', replacement = '[\g<label>](https://github.com/pytest-dev/pytest-print/blob/main/\g<path>)' },
 ]
+
+[tool.uv]
+dependency-groups.release = { requires-python = ">=3.15" }
 
 [tool.ruff]
 line-length = 120
@@ -159,3 +172,22 @@ report.omit = [
 report.show_missing = true
 html.show_contexts = true
 html.skip_covered = false
+
+[tool.towncrier]
+name = "pytest-print"
+directory = "changelog.d"
+filename = "CHANGELOG.md"
+template = "release_creator.fragments:template.jinja2"
+title_format = false
+type = [
+  { directory = "feature", name = "Added", showcontent = true },
+  { directory = "change", name = "Changes", showcontent = true },
+  { directory = "bugfix", name = "Fixed", showcontent = true },
+  { directory = "doc", name = "Documentation", showcontent = true },
+  { directory = "breaking", name = "Breaking changes", showcontent = true },
+  { directory = "security", name = "Security", showcontent = true },
+  { directory = "performance", name = "Performance", showcontent = true },
+  { directory = "deprecation", name = "Deprecated", showcontent = true },
+  { directory = "removal", name = "Removed", showcontent = true },
+  { directory = "packaging", name = "Packaging", showcontent = true },
+]
