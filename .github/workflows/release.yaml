@@ -8,43 +8,109 @@ env:
   dists-artifact-name: python-package-distributions
 jobs:
   build:
+    uses: tox-dev/github-workflows/.github/workflows/validate-python-release.yaml@5e11f2254a4dcb7102747d312ad7db48a2e9b0cb
+    permissions:
+      contents: read
+      pull-requests: read
+    with:
+      changelog: CHANGELOG.md
+      fragments: changelog.d
+      format: markdown
+      artifact-base-url: https://pypi.org/project/pytest-print/
+  previous-tag:
     runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    outputs:
+      previous: ${{ steps.select.outputs.previous }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
-      - name: Require a versioned changelog entry
-        env:
-          TAG: ${{ github.ref_name }}
-        run: |
-          if [[ ! "$TAG" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || ! grep -Fq "## $TAG (" CHANGELOG.md; then
-            echo "::error::$TAG has no matching changelog entry"
-            exit 1
-          fi
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
           python-version: "3.15"
           enable-cache: false
-          cache-dependency-glob: "pyproject.toml"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build package
-        run: uv build --python 3.15 --python-preference only-managed --sdist --wheel . --out-dir dist
-      - name: Match distributions to the tag
+      - name: Create release-tool environment
+        run: uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
+      - name: Install locked release tools
+        run: >-
+          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+      - name: Select previous tag
+        id: select
         env:
           TAG: ${{ github.ref_name }}
         run: |
-          test -f "dist/pytest_print-${TAG}.tar.gz"
-          compgen -G "dist/pytest_print-${TAG}-*.whl" >/dev/null
-      - name: Store the distribution packages
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+          set -euo pipefail
+          previous=$(git tag --list | "$RUNNER_TEMP/release-tools/bin/release-creator" tags "$TAG" --previous)
+          printf 'previous=%s\n' "$previous" >>"$GITHUB_OUTPUT"
+  contributor-metadata:
+    needs: previous-tag
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+    steps:
+      - name: Fetch contributor metadata
+        if: needs.previous-tag.outputs.previous != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          PREVIOUS: ${{ needs.previous-tag.outputs.previous }}
+        run: >-
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" -f tag_name="$TAG" -f previous_tag_name="$PREVIOUS" --jq .body >"$RUNNER_TEMP/generated-notes.md"
+      - name: Fetch first-release contributor metadata
+        if: needs.previous-tag.outputs.previous == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: >-
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/releases/generate-notes" -f tag_name="$TAG" --jq .body >"$RUNNER_TEMP/generated-notes.md"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ${{ env.dists-artifact-name }}
-          path: dist/*
+          name: github-generated-notes
+          path: ${{ runner.temp }}/generated-notes.md
+          if-no-files-found: error
+  github-notes:
+    needs: [build, contributor-metadata]
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: github-generated-notes
+          path: ${{ runner.temp }}
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          python-version: "3.15"
+          enable-cache: false
+      - name: Create release-tool environment
+        run: uv venv --python 3.15 "$RUNNER_TEMP/release-tools"
+      - name: Install locked release tools
+        run: >-
+          uv pip sync --preview-features pylock --python "$RUNNER_TEMP/release-tools/bin/python" --group release pylock.toml
+      - name: Add release tools to PATH
+        run: echo "$RUNNER_TEMP/release-tools/bin" >>"$GITHUB_PATH"
+      - uses: tox-dev/github-workflows/render-release-notes@5e11f2254a4dcb7102747d312ad7db48a2e9b0cb
+        with:
+          tag: ${{ github.ref_name }}
+          changelog: CHANGELOG.md
+          repository: ${{ github.repository }}
+          artifact-url: https://pypi.org/project/pytest-print/${{ github.ref_name }}/
+          generated-notes: ${{ runner.temp }}/generated-notes.md
+          output: ${{ runner.temp }}/release-notes.md
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: github-release-notes
+          path: ${{ runner.temp }}/release-notes.md
+          if-no-files-found: error
   release:
-    needs:
-      - build
+    needs: [build, github-notes]
     runs-on: ubuntu-26.04
     environment:
       name: release
@@ -52,38 +118,42 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Download all the dists
+      - name: Download all the distributions
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ${{ env.dists-artifact-name }}
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
-        with:
-          attestations: true
   github-release:
-    needs: release
+    needs: [release, github-notes]
     runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Publish GitHub Release
+          name: github-release-notes
+          path: ${{ runner.temp }}
+      - name: Find GitHub Release
+        id: existing
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
-        run: |
-          set -euo pipefail
-          awk -v tag="$TAG" 'index($0, "## " tag " (") == 1 { found = 1; next } found && /^## / { exit } found { print }' CHANGELOG.md > "$RUNNER_TEMP/release-notes.md"
-          test -s "$RUNNER_TEMP/release-notes.md"
-          printf '\n[PyPI release](https://pypi.org/project/pytest-print/%s/)\n' "$TAG" >> "$RUNNER_TEMP/release-notes.md"
-          previous=$(git tag --list '[0-9]*' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | awk -v tag="$TAG" '$0 == tag { print previous; exit } { previous = $0 }')
-          if [[ -n "$previous" ]]; then
-            printf '\n**Full Changelog**: https://github.com/%s/compare/%s...%s\n' "$GITHUB_REPOSITORY" "$previous" "$TAG" >> "$RUNNER_TEMP/release-notes.md"
-          else
-            printf '\n**Full Changelog**: https://github.com/%s/commits/%s\n' "$GITHUB_REPOSITORY" "$TAG" >> "$RUNNER_TEMP/release-notes.md"
-          fi
-          gh release create "$TAG" --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+        run: gh release view "$TAG" --json tagName >/dev/null
+      - name: Update GitHub Release
+        if: steps.existing.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: gh release edit "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
+      - name: Create GitHub Release
+        if: steps.existing.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/release-notes.md"
