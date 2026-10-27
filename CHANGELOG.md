@@ -2,6 +2,18 @@
 
 <!-- towncrier release notes start -->
 
+<a name="release-1-4-1"></a>
+
+## 1.4.1 (2026-10-27)
+
+<a name="release-1-4-1-packaging"></a>
+
+### Packaging
+
+- Release through `tox-dev/github-workflows` 6.0.1 with a Nab-generated lock, credit contributors from commit authors,
+  and let Dependabot and pre-commit.ci update the hooks ([#275](https://github.com/pytest-dev/pytest-print/pull/275)) by
+  [@gaborbernat](https://github.com/gaborbernat).
+
 <a name="release-1-4-0"></a>
 
 ## 1.4.0 (2026-10-10)
