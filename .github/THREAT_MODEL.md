@@ -7,8 +7,8 @@ SECURITY.md wins and we fix this file.
 ## How pytest-print works
 
 pytest-print provides fixtures (`printer`, `printer_session`, `pretty_printer`, `create_pretty_printer`) that write
-lines through pytest's terminal reporter while tests run, when `--print` is given or the verbosity is high enough. It
-reads nothing from disk or the network and runs no code of its own beyond formatting the text it is given.
+lines through pytest's terminal reporter while tests run, when `--print` or `-v` is given. It reads nothing from disk or
+the network and runs no code of its own beyond formatting the text it is given.
 
 ```mermaid
 flowchart LR
@@ -57,8 +57,8 @@ An attacker who controls any of these already has what pytest-print could give t
 ## Release chain
 
 Releases run on the shared [tox-dev/github-workflows](https://github.com/tox-dev/github-workflows) pipeline. A release
-App, not a person, pushes the release commit and tag; the build installs its tools hash-checked from `pylock.toml` with
-a seven-day upload cooldown; PyPI receives the files through
+App, not a person, pushes the release commit and tag; the build installs its tools from a hash-checked `pylock.toml`
+resolved with a seven-day upload cooldown by default; PyPI receives the files through
 [trusted publishing](https://docs.pypi.org/trusted-publishers/) with attestations, and the GitHub Release is immutable.
 Every workflow pins third-party actions to a commit SHA.
 
@@ -69,6 +69,11 @@ Every workflow pins third-party actions to a commit SHA.
 | A test prints a token with `printer`     | Not a vulnerability | The test chose to print it.             |
 | pytest-print writes lines to a file      | Vulnerability       | It must only use the terminal reporter. |
 | Indentation is wrong in `pretty_printer` | Bug                 | Formatting only.                        |
+
+## Severity
+
+- **Medium:** pytest-print writes anywhere other than pytest's terminal reporter.
+- **Low:** pytest-print prints while neither `--print` nor `-v` is given.
 
 ## Accepted risks
 
