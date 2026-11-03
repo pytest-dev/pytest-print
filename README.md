@@ -6,6 +6,8 @@
 [![Downloads](https://static.pepy.tech/badge/pytest-print/month)](https://pepy.tech/project/pytest-print)
 [![PyPI - License](https://img.shields.io/pypi/l/pytest-print?style=flat-square)](https://opensource.org/licenses/MIT)
 [![check](https://github.com/pytest-dev/pytest-print/actions/workflows/check.yaml/badge.svg)](https://github.com/pytest-dev/pytest-print/actions/workflows/check.yaml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/pytest-dev/pytest-print/badge)](https://scorecard.dev/viewer/?uri=github.com/pytest-dev/pytest-print)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/16275/badge)](https://www.bestpractices.dev/projects/16275)
 
 Allows to print extra content onto the PyTest reporting. This can be used for example to report sub-steps for long
 running tests, or to print debug information in your tests when you cannot debug the code (so that the end user does not
