@@ -17,3 +17,9 @@ Run `tox run -e fix`, `tox run -e type`, `tox run -e pkg_meta`, and `tox run -e 
 release workflow calculates the next version from the pending fragments. `feature` changes select a minor version;
 `breaking` changes select a major version; all other categories select a patch version. The maintainer can choose an
 explicit bump for exceptional cases.
+
+## Tests
+
+Add a test for every new feature and bug fix: a fix needs a test that fails without it. A change without a test needs a
+reason in the pull request description. Run the suite with `tox run -e 3.15`, which fails below 100% coverage. Pass
+pytest arguments after `--` to run a subset, for example `tox run -e 3.15 -- tests/test_print.py`.
