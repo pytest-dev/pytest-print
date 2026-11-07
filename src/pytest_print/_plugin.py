@@ -11,6 +11,11 @@ if TYPE_CHECKING:
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
+    """
+    Add the ``--print`` and ``--print-relative-time`` command-line options.
+
+    :param parser: the parser to add the options to
+    """
     group = parser.getgroup("general")
     group.addoption(
         "--print",
@@ -41,13 +46,23 @@ class Printer(Protocol):
 
 @pytest.fixture(scope="session")
 def printer_session(request: pytest.FixtureRequest) -> Printer:
-    # Pytest plugin to print test progress steps in verbose mode (session scoped).
+    """
+    Pytest plugin to print test progress steps in verbose mode (session scoped).
+
+    :param request: the pytest request
+    :returns: the printer shared by the whole session
+    """
     return _create(request, _Printer, Formatter())
 
 
 @pytest.fixture(name="printer")
 def printer(printer_session: Printer) -> Printer:
-    # Pytest plugin to print test progress steps in verbose mode.
+    """
+    Pytest plugin to print test progress steps in verbose mode.
+
+    :param printer_session: the printer shared by the whole session
+    :returns: the printer for one test
+    """
     return printer_session
 
 
@@ -67,13 +82,18 @@ class PrettyPrinter(Protocol):
         Create an indented pretty printer.
 
         :param icon: change the icon from the parents printer
-        :returns:
+        :returns: a pretty printer one indentation level deeper, with the given icon
         """
 
 
 @pytest.fixture(scope="session")
 def pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinter:
-    # Pytest plugin to print test progress steps in verbose mode.
+    """
+    Pytest plugin to print test progress steps in verbose mode, with icons and indentation.
+
+    :param request: the pytest request
+    :returns: the pretty printer shared by the whole session
+    """
     formatter = Formatter(head=" ", icon="⏩", space=" ", indentation="  ", timer_fmt="[{elapsed:.20f}]")
     return _create(request, _PrettyPrinter, formatter)
 
@@ -91,7 +111,13 @@ class PrettyPrinterFactory(Protocol):
 
 @pytest.fixture(scope="session")
 def create_pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinterFactory:
-    # Pytest plugin to print test progress steps in verbose mode.
+    """
+    Create pretty printers, each with the formatter it is given.
+
+    :param request: the pytest request
+    :returns: a factory that creates a pretty printer from a formatter
+    """
+
     def meth(*, formatter: Formatter) -> PrettyPrinter:
         return _create(request, _PrettyPrinter, formatter)
 
@@ -103,11 +129,11 @@ class Formatter:
     """
     Configures how to format messages to be printed.
 
-    :param head:
-    :param icon:
-    :param space:
-    :param indentation:
-    :param timer_fmt:
+    :param head: start every line with this prefix
+    :param icon: an icon text printed immediately after the head
+    :param space: character to print right after the prefix
+    :param indentation: use this character to indent the message, only useful for indented printers
+    :param timer_fmt: how to print out elapsed time since the creation of the printer - float (seconds)
     """
 
     head: str = ""  #: start every line with this prefix
