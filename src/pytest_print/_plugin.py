@@ -153,7 +153,7 @@ class Formatter:
         """
         indentation = " " * (len(self.indentation)) if level else self.indentation
         spacer = " " * len(self._pre) * level
-        return f"{indentation}{(self.timer_fmt.format(elapsed=elapsed) if elapsed else '')}{spacer}{self._pre}{msg}"
+        return f"{indentation}{self.timer_fmt.format(elapsed=elapsed) if elapsed else ''}{spacer}{self._pre}{msg}"
 
     @property
     def _pre(self) -> str:
