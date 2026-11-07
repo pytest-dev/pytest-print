@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-pytest_plugins = ["pytester"]
+from typing import Final
+
+pytest_plugins: Final[list[str]] = ["pytester"]
