@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import re
 
 import pytest
@@ -52,7 +53,8 @@ test_a.py::test_create_pretty_printer_usage PASSED
     assert output == expected
 
 
-def test_progress_v_relative(example: pytest.Pytester) -> None:
+def test_progress_v_relative(example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("pytest_print._plugin.default_timer", itertools.count(1).__next__)
     result_verbose_relative = example.runpytest(
         "--print",
         "-v",

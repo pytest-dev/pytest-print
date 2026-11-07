@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from time import sleep
 from typing import TYPE_CHECKING
 
 import pytest
@@ -39,25 +38,8 @@ def test_global_peace(pretty: PrettyPrinter) -> None:
 @pytest.mark.usefixtures("_expensive_setup")
 def test_server_parallel_requests(pprinter: PrettyPrinter) -> None:
     pprinter("create virtual environment")
-    create_virtual_environment()
-
     pprinter("start server from virtual env")
-    start_server()
-
     pprinter("do the parallel request test")
-    parallel_requests()
-
-
-def create_virtual_environment() -> None:
-    sleep(0.001)
-
-
-def start_server() -> None:
-    sleep(0.001)
-
-
-def parallel_requests() -> None:
-    sleep(0.001)
 
 
 def test_create_pretty_printer_usage(create_pretty_printer: PrettyPrinterFactory) -> None:
