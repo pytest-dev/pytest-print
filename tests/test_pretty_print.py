@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from . import extract_printer_text, seed_test
+from ._helpers import extract_printer_text, seed_test
 
 
 @pytest.fixture
