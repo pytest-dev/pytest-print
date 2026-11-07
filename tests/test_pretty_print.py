@@ -4,17 +4,12 @@ import re
 
 import pytest
 
-from tests import extract_printer_text, seed_test
+from ._helpers import extract_printer_text, seed_test
 
 
 @pytest.fixture
 def example(pytester: pytest.Pytester) -> pytest.Pytester:
     return seed_test("example_pretty_print.py", pytester)
-
-
-def fix_floats_in_relative_time(txt: str) -> str:
-    float_pattern = r"[-+]?\d*\.\d+([eE][-+]?\d+)?"
-    return re.sub(float_pattern, "0.1", txt)
 
 
 def test_progress_v_no_relative(example: pytest.Pytester) -> None:
@@ -61,3 +56,7 @@ test_a.py::test_pprinter_usage
 test_a.py::test_pprinter_usage PASSED
 """
     assert output == expected
+
+
+def fix_floats_in_relative_time(txt: str) -> str:
+    return re.sub(r"[-+]?\d*\.\d+([eE][-+]?\d+)?", "0.1", txt)

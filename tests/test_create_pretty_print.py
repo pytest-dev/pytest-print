@@ -1,20 +1,16 @@
 from __future__ import annotations
 
+import itertools
 import re
 
 import pytest
 
-from tests import extract_printer_text, seed_test
+from ._helpers import extract_printer_text, seed_test
 
 
 @pytest.fixture
 def example(pytester: pytest.Pytester) -> pytest.Pytester:
     return seed_test("example_create_pretty_print.py", pytester)
-
-
-def fix_floats_in_relative_time(txt: str) -> str:
-    float_pattern = r"[-+]?\d*\.\d+([eE][-+]?\d+)?"
-    return re.sub(float_pattern, "0.1", txt)
 
 
 def test_progress_no_v(example: pytest.Pytester) -> None:
@@ -57,7 +53,8 @@ test_a.py::test_create_pretty_printer_usage PASSED
     assert output == expected
 
 
-def test_progress_v_relative(example: pytest.Pytester) -> None:
+def test_progress_v_relative(example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("pytest_print._plugin.default_timer", itertools.count(1).__next__)
     result_verbose_relative = example.runpytest(
         "--print",
         "-v",
@@ -81,6 +78,10 @@ test_a.py::test_server_parallel_requests PASSED
   [0.1] ⏩ teardown global peace
 """
     assert output == expected
+
+
+def fix_floats_in_relative_time(txt: str) -> str:
+    return re.sub(r"[-+]?\d*\.\d+([eE][-+]?\d+)?", "0.1", txt)
 
 
 def test_progress_no_v_but_with_print_request(example: pytest.Pytester) -> None:
