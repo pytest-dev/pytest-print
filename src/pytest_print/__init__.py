@@ -43,13 +43,13 @@ class Printer(Protocol):
 
 @pytest.fixture(scope="session")
 def printer_session(request: pytest.FixtureRequest) -> Printer:
-    """Pytest plugin to print test progress steps in verbose mode (session scoped)."""
+    # Pytest plugin to print test progress steps in verbose mode (session scoped).
     return _create(request, _Printer, Formatter())
 
 
 @pytest.fixture(name="printer")
 def printer(printer_session: Printer) -> Printer:
-    """Pytest plugin to print test progress steps in verbose mode."""
+    # Pytest plugin to print test progress steps in verbose mode.
     return printer_session
 
 
@@ -69,12 +69,13 @@ class PrettyPrinter(Protocol):
         Create an indented pretty printer.
 
         :param icon: change the icon from the parents printer
+        :returns:
         """
 
 
 @pytest.fixture(scope="session")
 def pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinter:
-    """Pytest plugin to print test progress steps in verbose mode."""
+    # Pytest plugin to print test progress steps in verbose mode.
     formatter = Formatter(head=" ", icon="⏩", space=" ", indentation="  ", timer_fmt="[{elapsed:.20f}]")
     return _create(request, _PrettyPrinter, formatter)
 
@@ -92,8 +93,7 @@ class PrettyPrinterFactory(Protocol):
 
 @pytest.fixture(scope="session")
 def create_pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinterFactory:
-    """Pytest plugin to print test progress steps in verbose mode."""
-
+    # Pytest plugin to print test progress steps in verbose mode.
     def meth(*, formatter: Formatter) -> PrettyPrinter:
         return _create(request, _PrettyPrinter, formatter)
 
@@ -102,17 +102,21 @@ def create_pretty_printer(request: pytest.FixtureRequest) -> PrettyPrinterFactor
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class Formatter:
-    """Configures how to format messages to be printed."""
+    """
+    Configures how to format messages to be printed.
+
+    :param head:
+    :param icon:
+    :param space:
+    :param indentation:
+    :param timer_fmt:
+    """
 
     head: str = ""  #: start every line with this prefix
     icon: str = ""  #: an icon text printed immediately after the head
     space: str = ""  #: character to print right after the prefix
     indentation: str = "\t"  #: use this character to indent the message, only useful for indented printers
     timer_fmt: str = "{elapsed}\t"  #: how to print out elapsed time since the creation of the printer - float (seconds)
-
-    @property
-    def _pre(self) -> str:
-        return f"{self.head}{self.icon}{self.space}"
 
     def __call__(self, msg: str, level: int, elapsed: float | None) -> str:
         """
@@ -121,12 +125,15 @@ class Formatter:
         :param msg: the message to format
         :param level: indentation level
         :param elapsed: time elapsed
-        :return: the formatted message
+        :returns: the formatted message
         """
         indentation = " " * (len(self.indentation)) if level else self.indentation
         spacer = " " * len(self._pre) * level
-        timer = self.timer_fmt.format(elapsed=elapsed) if elapsed else ""
-        return f"{indentation}{timer}{spacer}{self._pre}{msg}"
+        return f"{indentation}{(self.timer_fmt.format(elapsed=elapsed) if elapsed else '')}{spacer}{self._pre}{msg}"
+
+    @property
+    def _pre(self) -> str:
+        return f"{self.head}{self.icon}{self.space}"
 
 
 class _Printer:

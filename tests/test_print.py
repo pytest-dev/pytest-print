@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from tests import extract_printer_text, seed_test
+from . import extract_printer_text, seed_test
 
 
 @pytest.fixture

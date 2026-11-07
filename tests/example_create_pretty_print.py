@@ -13,18 +13,6 @@ if TYPE_CHECKING:
     from pytest_print import PrettyPrinter, PrettyPrinterFactory
 
 
-def create_virtual_environment() -> None:
-    sleep(0.001)
-
-
-def start_server() -> None:
-    sleep(0.001)
-
-
-def parallel_requests() -> None:
-    sleep(0.001)
-
-
 @pytest.fixture(scope="session")
 def pretty(create_pretty_printer: PrettyPrinterFactory) -> PrettyPrinter:
     formatter = Formatter(indentation="  ", head=" ", space=" ", icon="⏩", timer_fmt="[{elapsed:.20f}]")
@@ -58,6 +46,18 @@ def test_server_parallel_requests(pprinter: PrettyPrinter) -> None:
 
     pprinter("do the parallel request test")
     parallel_requests()
+
+
+def create_virtual_environment() -> None:
+    sleep(0.001)
+
+
+def start_server() -> None:
+    sleep(0.001)
+
+
+def parallel_requests() -> None:
+    sleep(0.001)
 
 
 def test_create_pretty_printer_usage(create_pretty_printer: PrettyPrinterFactory) -> None:
