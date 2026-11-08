@@ -59,4 +59,13 @@ test_a.py::test_pprinter_usage PASSED
 
 
 def fix_floats_in_relative_time(txt: str) -> str:
-    return re.sub(r"[-+]?\d*\.\d+([eE][-+]?\d+)?", "0.1", txt)
+    return re.sub(
+        r"""
+        [-+]?             # optional sign
+        \d*\.\d+          # integer and fraction digits
+        ([eE][-+]?\d+)?   # optional exponent
+        """,
+        "0.1",
+        txt,
+        flags=re.VERBOSE,
+    )
