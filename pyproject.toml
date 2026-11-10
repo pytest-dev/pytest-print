@@ -4,6 +4,7 @@ requires = [
   "hatch-fancy-pypi-readme>=25.1",
   "hatch-vcs>=0.5",
   "hatchling>=1.32.4",
+  "python-sbom[hatch]>=0.1.2",
 ]
 
 [project]
@@ -75,6 +76,7 @@ build = [
   "hatch-fancy-pypi-readme>=25.1",
   "hatch-vcs>=0.5",
   "hatchling>=1.32.4",
+  "python-sbom[hatch]>=0.1.2",
   "setuptools>=80",
 ]
 lint = [
@@ -109,6 +111,7 @@ metadata.hooks.fancy-pypi-readme.substitutions = [
     \)
     ''', replacement = '[\g<label>](https://github.com/pytest-dev/pytest-print/blob/main/\g<path>)' },
 ]
+build.hooks.python-sbom = {}
 
 [tool.uv]
 dependency-groups.release-news = { requires-python = ">=3.15" }
@@ -212,6 +215,9 @@ type = [
   { directory = "packaging", name = "Packaging", showcontent = true },
 ]
 
+[tool.python-sbom]
+supplier = { name = "pytest-dev", url = [ "https://github.com/pytest-dev" ] }
+
 [tool.nab]
 mode = "universal"
 base-group = "project-runtime"
@@ -220,6 +226,9 @@ uploaded-prior-to = "P7D"
 decision-order = "stable"
 matrix.python = ">=3.15,<3.16"
 matrix.platforms = [ "linux_x86_64" ]
+# python-sbom 0.1.2 needs a seven-day cutoff exception.
+# expires 2026-11-15
+packages.python-sbom.uploaded-prior-to = 2026-11-08T17:54:00Z
 
 [tool.simplint]
 docstring-style = "rst"
