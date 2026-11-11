@@ -7,7 +7,10 @@ from typing import TYPE_CHECKING, Protocol, TypeVar, cast
 import pytest
 
 if TYPE_CHECKING:
-    from _pytest.capture import CaptureManager
+    from contextlib import AbstractContextManager
+
+    class _CaptureManager(Protocol):
+        def global_and_fixture_disabled(self) -> AbstractContextManager[None]: ...
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:
@@ -165,7 +168,7 @@ class _Printer:
         self,
         *,
         reporter: pytest.TerminalReporter | None,
-        capture_manager: CaptureManager | None,
+        capture_manager: _CaptureManager | None,
         formatter: Formatter,
         level: int,
         start: float | None,
@@ -209,7 +212,7 @@ def _create(request: pytest.FixtureRequest, of_type: type[_OfType], formatter: F
         reporter=cast("pytest.TerminalReporter | None", request.config.pluginmanager.getplugin("terminalreporter"))
         if request.config.getoption("pytest_print_on") or cast("int", request.config.getoption("verbose")) > 0
         else None,
-        capture_manager=cast("CaptureManager | None", request.config.pluginmanager.getplugin("capturemanager")),
+        capture_manager=cast("_CaptureManager | None", request.config.pluginmanager.getplugin("capturemanager")),
         formatter=formatter,
         start=default_timer() if request.config.getoption("pytest_print_relative_time") else None,
         level=0,
