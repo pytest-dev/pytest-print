@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 pytest_plugins: Final[list[str]] = ["pytester"]
+_PROGRESS_PATTERN: Final[re.Pattern[str]] = re.compile(r"\s*\[\s*\d+%\]")
+_TRAILING_SPACE_PATTERN: Final[re.Pattern[str]] = re.compile(r"[ \t]+\n")
 
 
 @pytest.fixture(name="extract_printer_text")
@@ -18,9 +20,9 @@ def _extract_printer_text() -> Callable[[list[str]], str]:
     def extract(lines: list[str]) -> str:
         output = "\n".join(line for line in lines if not line.startswith("=" * 20))
         output = output[output.find("test_a.py::") :]
-        output = re.sub(r"\s*\[\s*\d+%\]", "", output)
+        output = _PROGRESS_PATTERN.sub("", output)
         output = output.replace("test_a::", "a::")
-        return re.sub(r"[ \t]+\n", "\n", output)
+        return _TRAILING_SPACE_PATTERN.sub("\n", output)
 
     return extract
 
