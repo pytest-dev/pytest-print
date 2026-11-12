@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import itertools
+from typing import TYPE_CHECKING
 
 import pytest
 
-from ._helpers import extract_printer_text, seed_test
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @pytest.fixture
-def example(pytester: pytest.Pytester) -> pytest.Pytester:
-    return seed_test("example_print.py", pytester)
+def example(seed_test: Callable[[str], pytest.Pytester]) -> pytest.Pytester:
+    return seed_test("example_print.py")
 
 
 def test_progress_no_v(example: pytest.Pytester) -> None:
@@ -19,7 +21,9 @@ def test_progress_no_v(example: pytest.Pytester) -> None:
     assert "global peace" not in result.outlines
 
 
-def test_progress_v_no_relative(example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_progress_v_no_relative(
+    example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, extract_printer_text: Callable[[list[str]], str]
+) -> None:
     monkeypatch.setattr("_pytest._io.terminalwriter.get_terminal_width", lambda: 80)
     monkeypatch.setenv("COLUMNS", str(80))
     result_verbose = example.runpytest("-v", "--print")

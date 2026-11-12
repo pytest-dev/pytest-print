@@ -1,18 +1,20 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING
 
 import pytest
 
-from ._helpers import extract_printer_text, seed_test
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @pytest.fixture
-def example(pytester: pytest.Pytester) -> pytest.Pytester:
-    return seed_test("example_pretty_print.py", pytester)
+def example(seed_test: Callable[[str], pytest.Pytester]) -> pytest.Pytester:
+    return seed_test("example_pretty_print.py")
 
 
-def test_progress_v_no_relative(example: pytest.Pytester) -> None:
+def test_progress_v_no_relative(example: pytest.Pytester, extract_printer_text: Callable[[list[str]], str]) -> None:
     result = example.runpytest("-v", "--print")
     result.assert_outcomes(passed=1)
 
@@ -32,7 +34,7 @@ test_a.py::test_pprinter_usage PASSED
     assert output == expected
 
 
-def test_progress_v_relative(example: pytest.Pytester) -> None:
+def test_progress_v_relative(example: pytest.Pytester, extract_printer_text: Callable[[list[str]], str]) -> None:
     result = example.runpytest(
         "--print",
         "-v",
