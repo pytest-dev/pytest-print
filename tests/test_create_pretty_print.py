@@ -2,12 +2,21 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import pytest
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+_FLOAT_PATTERN: Final[re.Pattern[str]] = re.compile(
+    r"""
+    [-+]?             # optional sign
+    \d*\.\d+          # integer and fraction digits
+    ([eE][-+]?\d+)?   # optional exponent
+    """,
+    flags=re.VERBOSE,
+)
 
 
 @pytest.fixture
@@ -85,16 +94,7 @@ test_a.py::test_server_parallel_requests PASSED
 
 
 def fix_floats_in_relative_time(txt: str) -> str:
-    return re.sub(
-        r"""
-        [-+]?             # optional sign
-        \d*\.\d+          # integer and fraction digits
-        ([eE][-+]?\d+)?   # optional exponent
-        """,
-        "0.1",
-        txt,
-        flags=re.VERBOSE,
-    )
+    return _FLOAT_PATTERN.sub("0.1", txt)
 
 
 def test_progress_no_v_but_with_print_request(example: pytest.Pytester) -> None:
