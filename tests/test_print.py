@@ -47,7 +47,7 @@ test_a.py::test_server_parallel_requests PASSED
 
 
 def test_progress_v_relative(example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("pytest_print._plugin.default_timer", itertools.count(1).__next__)
+    monkeypatch.setattr("pytest_print.default_timer", itertools.count(1).__next__)
     result_verbose_relative = example.runpytest(
         "--print",
         "-v",
