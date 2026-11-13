@@ -67,7 +67,7 @@ test_a.py::test_create_pretty_printer_usage PASSED
 def test_progress_v_relative(
     example: pytest.Pytester, monkeypatch: pytest.MonkeyPatch, extract_printer_text: Callable[[list[str]], str]
 ) -> None:
-    monkeypatch.setattr("pytest_print._plugin.default_timer", itertools.count(1).__next__)
+    monkeypatch.setattr("pytest_print.default_timer", itertools.count(1).__next__)
     result_verbose_relative = example.runpytest(
         "--print",
         "-v",
