@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace  # simplint: ignore[init-module-content]  # public types live here
-from timeit import default_timer  # simplint: ignore[init-module-content]  # pytest plugin runs here
-from typing import (  # simplint: ignore[init-module-content]  # public types live here
+from dataclasses import dataclass, replace
+from timeit import default_timer
+from typing import (
     TYPE_CHECKING,
     Protocol,
     TypeVar,
     cast,
 )
 
-import pytest  # simplint: ignore[init-module-content]  # pytest loads this module
+import pytest
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureManager  # simplint: ignore[private-import-path]  # pytest has no public type
