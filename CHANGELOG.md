@@ -2,6 +2,25 @@
 
 <!-- towncrier release notes start -->
 
+<a name="release-1-4-3"></a>
+
+## 1.4.3 (2026-11-18)
+
+<a name="release-1-4-3-fixed"></a>
+
+### Fixed
+
+- Restore the original module path of public printer types for introspection and pickling
+  ([#304](https://github.com/pytest-dev/pytest-print/pull/304)) by [@gaborbernat](https://github.com/gaborbernat).
+
+<a name="release-1-4-3-packaging"></a>
+
+### Packaging
+
+- Every wheel now carries a [PEP 770](https://peps.python.org/pep-0770/) CycloneDX SBOM in its `.dist-info/sboms`
+  directory, written at build time by [python-sbom](https://github.com/tox-dev/python-sbom)
+  ([#300](https://github.com/pytest-dev/pytest-print/pull/300)) by [@gaborbernat](https://github.com/gaborbernat).
+
 <a name="release-1-4-2"></a>
 
 ## 1.4.2 (2026-11-04)
